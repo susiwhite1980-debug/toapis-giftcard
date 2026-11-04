@@ -2,7 +2,7 @@
  * Card logical size 1149x672, corner radius 40 (matches CSS .face border-radius 3.5%/6%).
  * Rounding is done ONCE here with an anti-aliased canvas clip; backgrounds are fully opaque
  * (no alpha holes), so exported PNGs have clean transparent corners and no black notches.
- * Themes: default | halloween | christmas  (URL param `t`, see README).
+ * Themes: default | halloween | christmas | gold | diamond  (URL param `t`, see README).
  */
 (function(g){
 const W=1149,H=672,R=40;
@@ -18,10 +18,18 @@ const THEMES={
  christmas:{label:'圣诞节',bg:'bg_christmas.jpg?v=2',logo:true,base:'#0a2e22',
   ink:'#f8f2e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,240,200,.2)',
   box:['#fffdf6','#f0e8d4'],boxSh:'rgba(0,0,0,.36)',boxLine:'rgba(196,160,88,.85)',codeInk:'#12382a',codeHi:'rgba(255,255,255,.7)',
-  glow:'196,160,88',page:['#0e3326','#07201a','#030c09'],accent:'#c9a45a',accentSoft:'#e3cc8f',rim:'226,200,140'}
+  glow:'196,160,88',page:['#0e3326','#07201a','#030c09'],accent:'#c9a45a',accentSoft:'#e3cc8f',rim:'226,200,140'},
+ gold:{label:'金卡',bg:'bg_gold.jpg?v=1',logo:true,base:'#3a2a08',
+  ink:'#fffaf0',shBig:'rgba(40,25,0,.45)',sh:'rgba(40,25,0,.55)',hi:'rgba(255,240,200,.25)',
+  box:['#fffbf0','#f3e4bf'],boxSh:'rgba(40,25,0,.4)',boxLine:'rgba(184,140,40,.9)',codeInk:'#4a3305',codeHi:'rgba(255,255,255,.7)',
+  glow:'230,180,60',page:['#2e2206','#171003','#080501'],accent:'#d4a72c',accentSoft:'#f0d58a',rim:'240,210,140'},
+ diamond:{label:'钻石卡',bg:'bg_diamond.jpg?v=1',logo:true,base:'#0b0d12',
+  ink:'#f4f8ff',shBig:'rgba(0,0,0,.45)',sh:'rgba(0,0,0,.55)',hi:'rgba(220,235,255,.22)',
+  box:['#ffffff','#e6ecf5'],boxSh:'rgba(0,0,0,.45)',boxLine:'rgba(160,180,210,.9)',codeInk:'#1b2433',codeHi:'rgba(255,255,255,.8)',
+  glow:'170,200,255',page:['#161c28','#0a0d14','#030406'],accent:'#9fb8e6',accentSoft:'#dbe6fb',rim:'210,225,250'}
 };
-const THEME_ORDER=['default','halloween','christmas'];
-function pickTheme(v){v=(v||'').trim().toLowerCase();if(v==='xmas')v='christmas';if(v==='hw')v='halloween';return THEMES[v]?v:'default'}
+const THEME_ORDER=['default','halloween','christmas','gold','diamond'];
+function pickTheme(v){v=(v||'').trim().toLowerCase();if(v==='xmas')v='christmas';if(v==='hw')v='halloween';if(v==='diamonds')v='diamond';return THEMES[v]?v:'default'}
 const CJK_FB=',"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Hiragino Sans","Microsoft YaHei","Malgun Gothic","Apple SD Gothic Neo","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif';
 const F=f=>f+CJK_FB;
 const isLatin=T=>/^(en|es|pt-BR|fr|de|ru|uk)$/.test(T.code);
