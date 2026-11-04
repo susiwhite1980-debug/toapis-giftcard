@@ -2,7 +2,7 @@
  * Card logical size 1149x672, corner radius 40 (matches CSS .face border-radius 3.5%/6%).
  * Rounding is done ONCE here with an anti-aliased canvas clip; backgrounds are fully opaque
  * (no alpha holes), so exported PNGs have clean transparent corners and no black notches.
- * Themes: default | halloween  (URL param `t`, see README).
+ * Themes: default | halloween | christmas  (URL param `t`, see README).
  */
 (function(g){
 const W=1149,H=672,R=40;
@@ -14,9 +14,13 @@ const THEMES={
  halloween:{label:'万圣节',bg:'bg_halloween.jpg?v=2',logo:true,base:'#2a0f12',
   ink:'#fbf1e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,226,180,.22)',
   box:['#fffaf2','#f1e3cd'],boxSh:'rgba(0,0,0,.38)',boxLine:'rgba(196,146,74,.85)',codeInk:'#3a1d0e',codeHi:'rgba(255,255,255,.7)',
-  glow:'214,120,48',page:['#2a1008','#150806','#070303'],accent:'#d9853a',accentSoft:'#e6b878',rim:'226,180,110'}
+  glow:'214,120,48',page:['#2a1008','#150806','#070303'],accent:'#d9853a',accentSoft:'#e6b878',rim:'226,180,110'},
+ christmas:{label:'圣诞节',bg:'bg_christmas.jpg?v=2',logo:true,base:'#0a2e22',
+  ink:'#f8f2e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,240,200,.2)',
+  box:['#fffdf6','#f0e8d4'],boxSh:'rgba(0,0,0,.36)',boxLine:'rgba(196,160,88,.85)',codeInk:'#12382a',codeHi:'rgba(255,255,255,.7)',
+  glow:'196,160,88',page:['#0e3326','#07201a','#030c09'],accent:'#c9a45a',accentSoft:'#e3cc8f',rim:'226,200,140'}
 };
-const THEME_ORDER=['default','halloween'];
+const THEME_ORDER=['default','halloween','christmas'];
 function pickTheme(v){v=(v||'').trim().toLowerCase();if(v==='xmas')v='christmas';if(v==='hw')v='halloween';return THEMES[v]?v:'default'}
 const CJK_FB=',"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Hiragino Sans","Microsoft YaHei","Malgun Gothic","Apple SD Gothic Neo","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif';
 const F=f=>f+CJK_FB;
