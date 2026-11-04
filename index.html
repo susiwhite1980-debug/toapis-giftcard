@@ -10,7 +10,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 18px;font-family:GI,system-ui,sans-serif;color:#fbe9dc;overflow:hidden;
- background:radial-gradient(120% 90% at 50% 35%,#3a1606 0%,#1d0a03 45%,#0b0401 100%)}
+ background:#0b0401}
 #bgfx,#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 #bgfx{z-index:0}#fx{z-index:5}
 .brand{position:relative;z-index:2;font:600 12px/1 GI,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#f8b27f;opacity:0;animation:fadeUp 1s .9s cubic-bezier(.2,.8,.2,1) forwards}
@@ -46,7 +46,14 @@ body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:col
 @keyframes shake{20%,60%{translate:-8px 0}40%,80%{translate:8px 0}}
 @media (max-width:600px){body{gap:16px}.hint{font-size:13px}.brand{font-size:10px}}
 @media (prefers-reduced-motion:reduce){.brand,.hint,.cta{animation-duration:.01s;animation-delay:0s}}
+
+.silk{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#0a0402}
+.silk video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);filter:saturate(1.05) brightness(.88)}
+.silk-veil{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 42%,rgba(0,0,0,.15),rgba(0,0,0,.55) 75%,rgba(0,0,0,.72));mix-blend-mode:multiply}
+.wrap,.brand,.hint,.cta,.toast{position:relative;z-index:1}
+
 </style></head><body>
+<div class="silk" aria-hidden="true"><video id="silk" autoplay muted loop playsinline preload="auto" poster=""></video><div class="silk-veil"></div></div>
 <canvas id="bgfx"></canvas>
 <div class="brand"><i></i>ToAPIs · Gift Card<i></i></div>
 <div class="scene" id="scene">
@@ -79,7 +86,7 @@ function pickLang(v){v=(v||'').trim();if(!v)return 'en';const lo=v.toLowerCase()
 const LANG=pickLang(params.get('l')||params.get('lang'));const T=I18N[LANG];const TT=()=>T;
 const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const TH=GiftFace.THEMES[THEME_KEY];
 (function applyTheme(){if(THEME_KEY==='default')return;const g=TH.glow,p=TH.page,st=document.createElement('style');
- st.textContent='body{background:radial-gradient(120% 90% at 50% 35%,'+p[0]+' 0%,'+p[1]+' 45%,'+p[2]+' 100%)}'
+ st.textContent='body{background:'+p[2]+'}'
  +'.brand{color:'+TH.accentSoft+'}.brand i{background:linear-gradient(90deg,transparent,'+TH.accent+')}'
  +'.glow{background:radial-gradient(closest-side,rgba('+g+',.7),rgba('+g+',.32) 45%,rgba('+g+',.1) 75%,transparent)}'
  +'.reflect{background:radial-gradient(closest-side,rgba('+g+',.32),rgba('+g+',.12) 55%,transparent)}'
@@ -87,6 +94,22 @@ const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const T
  +'.cta{background:linear-gradient(135deg,'+TH.accentSoft+','+TH.accent+' 55%,'+TH.accent+');color:#1a0d06;box-shadow:0 10px 30px -6px rgba('+g+',.55)}'
  +'.hint b{color:'+TH.accentSoft+'}';
  document.head.appendChild(st);document.querySelector('meta[name=theme-color]').content=p[2];})();
+
+(function silkBg(){
+ /* real satin silk video loop behind the card */
+ const v=document.getElementById('silk'); if(!v) return;
+ const src='silk_flow.mp4?v=2';
+ if(!v.getAttribute('src')){v.src=src;v.load()}
+ v.playbackRate=.72;const play=()=>v.play().catch(()=>{});
+ v.addEventListener('canplay',play,{once:true}); play();
+ // theme tint over veil
+ const veil=document.querySelector('.silk-veil');
+ if(veil && THEME_KEY!=='default'){
+  const tint=THEME_KEY==='halloween'?'rgba(80,20,10,.35)':THEME_KEY==='christmas'?'rgba(0,40,28,.35)':'transparent';
+  veil.style.background='radial-gradient(70% 55% at 50% 42%,rgba(0,0,0,.1),'+tint+' 55%,rgba(0,0,0,.7))';
+ }
+})();
+
 const KBD='<span class="kbd">Ctrl+V</span> / <span class="kbd">⌘V</span>',REDEEM='<b>Redeem Now</b>';
 (function applyLang(){const d=document.documentElement;d.lang=T.htmlLang;d.dir=T.dir;document.title=T.title;
  document.querySelector('.brand').innerHTML='<i></i>'+T.brand.replace(/</g,'&lt;')+'<i></i>';
