@@ -70,7 +70,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:col
 <div class="err" id="err" hidden>Missing redeem code in this link.</div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast">Copied. Opening ToAPIs…</div>
-<script src="cardface.js?v=7"></script>
+<script src="cardface.js?v=8"></script>
 <script>
 const BILLING='https://toapis.com/login?aff=zjQg&redirect=/dashboard/billing';
 const params=new URLSearchParams((location.hash||location.search||'').replace(/^[#?]/,''));
@@ -96,9 +96,11 @@ const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const T
  document.head.appendChild(st);document.querySelector('meta[name=theme-color]').content=p[2];})();
 
 (function silkBg(){
- /* real satin silk video loop behind the card */
+ /* looping video behind the card: satin silk or falling leaves, picked at random (50/50) per page load */
  const v=document.getElementById('silk'); if(!v) return;
- const src='silk_flow.mp4?v=2';
+ const BGS=['silk_flow.mp4?v=2','leaves_flow.mp4?v=1'];
+ const src=BGS[Math.random()<.5?0:1];
+ v.dataset.bg=src.split('_')[0];
  if(!v.getAttribute('src')){v.src=src;v.load()}
  v.playbackRate=.72;const play=()=>v.play().catch(()=>{});
  v.addEventListener('canplay',play,{once:true}); play();
