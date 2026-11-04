@@ -14,11 +14,15 @@ input{padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:15px;m
 #code{min-width:340px;font-family:Consolas,monospace}
 button{border:0;border-radius:10px;background:#f26a1b;color:#fff;font-weight:700;padding:10px 16px;cursor:pointer}
 button.ghost{background:#fff;color:#f26a1b;border:1px solid #f26a1b}
+button:disabled{opacity:.55;cursor:wait}
 .out{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
 .out input{flex:1;min-width:260px}
 canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:block;background:#111}
 .tip{font-size:12px;color:#888;margin-top:12px;line-height:1.6}
-</style></head><body><div class="app">
+#gifProg{font-size:12px;color:#f26a1b;min-height:1.2em;margin:4px 0 0}
+</style>
+<script src="gif.js"></script>
+</head><body><div class="app">
 <h1>做卡入口</h1>
 <p class="sub">填好后生成客户专属链接。邮件里用「复制邮件卡片」粘贴即可；客户点卡会复制兑换码并跳转充值中心。</p>
 <div class="form">
@@ -28,10 +32,12 @@ canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba
 <button id="mk">生成链接</button>
 <button id="mail" class="ghost">复制邮件卡片</button>
 <button id="dl" class="ghost">下载 PNG</button>
+<button id="gif" class="ghost">下载动图</button>
 </div>
 <div class="out"><input id="url" readonly placeholder="生成后的客户链接"><button id="copy" class="ghost">复制链接</button><a id="open" href="#" target="_blank" rel="noopener">打开预览</a></div>
+<p id="gifProg"></p>
 <canvas id="cv" width="2560" height="1440"></canvas>
-<p class="tip">邮件：点「复制邮件卡片」→ 写信窗口 Ctrl+V。若企微邮箱把链接剥掉，改用「下载 PNG」+「复制链接」，插图后选中图片加超链接。<br>聊天软件（TG / 微信等）图片本身不能带链接，发 PNG 的同时再发一行链接即可。<br>链接格式：站点首页 + <code>#n=名字&amp;c=兑换码&amp;a=金额</code>。兑换码只在链接里，不会写进仓库。</p>
+<p class="tip">邮件：点「复制邮件卡片」→ 写信窗口 Ctrl+V。若企微邮箱把链接剥掉，改用「下载 PNG」+「复制链接」，插图后选中图片加超链接。<br>聊天软件（TG / 微信 / Discord 等）：点「下载动图」发 GIF 好看，但动图本身不能跳转，必须再发一行兑换链接；或发 PNG + 链接。<br>链接格式：站点首页 + <code>#n=名字&amp;c=兑换码&amp;a=金额</code>。兑换码只在链接里，不会写进仓库。</p>
 </div>
 <script>
 const $=id=>document.getElementById(id);
@@ -110,5 +116,158 @@ $('mail').onclick=async()=>{
     set('复制失败，请用下载PNG');
   }
 };
+
+/* ---------- GIF: tilt + shimmer loop (client-side gif.js) ---------- */
+let GIF_W=520, GIF_H=360, GIF_FPS=15, GIF_SEC=3, GIF_FRAMES=Math.round(GIF_FPS*GIF_SEC);
+function makeSparkleSprite(){
+  const s=document.createElement('canvas');s.width=s.height=64;
+  const c=s.getContext('2d');
+  const g=c.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,245,230,1)');g.addColorStop(.18,'rgba(255,190,130,.85)');
+  g.addColorStop(.45,'rgba(242,106,27,.25)');g.addColorStop(1,'rgba(242,106,27,0)');
+  c.fillStyle=g;c.fillRect(0,0,64,64);
+  c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,240,220,.9)';
+  c.fillRect(31,6,2,52);c.fillRect(6,31,52,2);
+  return s;
+}
+function renderAnimFrame(out, face, t, spr, dust){
+  const ctx=out.getContext('2d');
+  const W=out.width, H=out.height;
+  // dark radial bg
+  const bgG=ctx.createRadialGradient(W*.5,H*.38,20,W*.5,H*.5,W*.75);
+  bgG.addColorStop(0,'#3a1606');bgG.addColorStop(.45,'#1d0a03');bgG.addColorStop(1,'#0b0401');
+  ctx.fillStyle=bgG;ctx.fillRect(0,0,W,H);
+  // sparkles
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(const p of dust){
+    const a=.2+.7*Math.pow(.5+.5*Math.sin(t*Math.PI*2*p.tw+p.ph),3);
+    ctx.globalAlpha=a*.7;
+    const s=p.r*3.2;
+    const px=p.x+Math.sin(t*Math.PI*2*.5+p.ph)*p.dx;
+    const py=p.y-t*p.v*(H*0.35);
+    const yy=((py% (H+40))+H+40)%(H+40)-20;
+    ctx.drawImage(spr,px-s/2,yy-s/2,s,s);
+  }
+  ctx.restore();
+  // tilt matching sample capture: tgtX=0.6*cos, tgtY=0.45*sin
+  const a=2*Math.PI*t;
+  const curX=0.6*Math.cos(a), curY=0.45*Math.sin(a);
+  const amp=13;
+  const ry=curX*amp*(Math.PI/180), rx=-curY*amp*.8*(Math.PI/180);
+  const floatY=Math.sin(t*Math.PI*2*1.3)*5;
+  const cw=W*0.78, ch=cw*(720/1280);
+  const cx=W/2, cy=H/2+floatY*0.4;
+  // glow under card
+  ctx.save();
+  ctx.translate(cx+curX*-10, cy+28+curY*-6);
+  ctx.scale(1.05,0.55);
+  const glow=ctx.createRadialGradient(0,0,0,0,0,cw*0.55);
+  glow.addColorStop(0,'rgba(242,106,27,.55)');glow.addColorStop(.55,'rgba(242,106,27,.18)');glow.addColorStop(1,'rgba(242,106,27,0)');
+  ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,cw*0.55,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  // card with approx 3D
+  const cosY=Math.cos(ry), cosX=Math.cos(rx);
+  const skewX=Math.sin(ry)*0.22, skewY=Math.sin(rx)*0.12;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.transform(cosY, skewY, skewX, cosX, 0, 0);
+  // soft shadow
+  ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=28;ctx.shadowOffsetY=14;
+  // round clip
+  const rxR=cw*0.035, ryR=ch*0.06;
+  ctx.beginPath();
+  const X=-cw/2,Y=-ch/2;
+  ctx.moveTo(X+rxR,Y);ctx.arcTo(X+cw,Y,X+cw,Y+ch,rxR);ctx.arcTo(X+cw,Y+ch,X,Y+ch,ryR);
+  ctx.arcTo(X,Y+ch,X,Y,ryR);ctx.arcTo(X,Y,X+cw,Y,rxR);ctx.closePath();
+  ctx.clip();
+  ctx.drawImage(face, X, Y, cw, ch);
+  ctx.shadowColor='transparent';
+  // foil shimmer
+  const fx=50+curX*60;
+  const foil=ctx.createLinearGradient(X,Y,X+cw,Y+ch);
+  const fo=.05+Math.min(.12,Math.hypot(curX,curY)*.12);
+  foil.addColorStop(0,'rgba(255,80,40,0)');
+  foil.addColorStop(Math.max(0,Math.min(1,(fx-20)/100)),'rgba(255,200,120,'+(fo*2.2)+')');
+  foil.addColorStop(Math.max(0,Math.min(1,fx/100)),'rgba(120,220,255,'+(fo*1.8)+')');
+  foil.addColorStop(Math.max(0,Math.min(1,(fx+20)/100)),'rgba(255,240,170,'+(fo*2)+')');
+  foil.addColorStop(1,'rgba(255,80,40,0)');
+  ctx.globalCompositeOperation='color-dodge';ctx.globalAlpha=.55;ctx.fillStyle=foil;ctx.fillRect(X,Y,cw,ch);
+  // light sweep once per loop
+  const sp=t; // 0..1
+  const sw=-0.35+sp*1.7;
+  ctx.globalCompositeOperation='overlay';ctx.globalAlpha=1;
+  const sweep=ctx.createLinearGradient(X+cw*sw,Y,X+cw*(sw+0.35),Y);
+  sweep.addColorStop(0,'rgba(255,255,255,0)');
+  sweep.addColorStop(.35,'rgba(255,255,255,.15)');
+  sweep.addColorStop(.5,'rgba(255,236,210,.75)');
+  sweep.addColorStop(.65,'rgba(255,255,255,.15)');
+  sweep.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=sweep;ctx.fillRect(X,Y,cw,ch);
+  // glare
+  ctx.globalCompositeOperation='source-over';
+  const gx=50+curX*45, gy=35+curY*40;
+  const glare=ctx.createRadialGradient(X+cw*gx/100,Y+ch*gy/100,0,X+cw*gx/100,Y+ch*gy/100,cw*.55);
+  glare.addColorStop(0,'rgba(255,250,240,.28)');glare.addColorStop(.35,'rgba(255,245,230,.08)');glare.addColorStop(1,'rgba(255,245,230,0)');
+  ctx.fillStyle=glare;ctx.fillRect(X,Y,cw,ch);
+  // rim
+  ctx.strokeStyle='rgba(255,220,190,.35)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.restore();
+}
+function encodeGifFromFace(face){
+  return new Promise((resolve,reject)=>{
+    if(typeof GIF!=='function'){reject(new Error('gif.js missing'));return}
+    const out=document.createElement('canvas');out.width=GIF_W;out.height=GIF_H;
+    const spr=makeSparkleSprite();
+    const dust=[];
+    for(let i=0;i<16;i++)dust.push({
+      x:Math.random()*GIF_W,y:Math.random()*GIF_H,r:1.5+Math.random()*4,
+      v:.4+Math.random()*1.2,ph:Math.random()*6.28,tw:.6+Math.random()*1.6,dx:(Math.random()-.5)*18
+    });
+    const gif=new GIF({
+      workers:2,quality:15,width:GIF_W,height:GIF_H,workerScript:'gif.worker.js',
+      dither:false,transparent:null
+    });
+    const nFrames=Math.round(GIF_FPS*GIF_SEC);
+    const delay=Math.round(1000/GIF_FPS);
+    for(let i=0;i<nFrames;i++){
+      const t=i/nFrames;
+      renderAnimFrame(out, face, t, spr, dust);
+      gif.addFrame(out,{copy:true,delay:delay});
+      if(i%5===0)$('gifProg').textContent='渲染动图 '+(Math.round((i+1)/nFrames*55))+'%…';
+    }
+    gif.on('progress',p=>{$('gifProg').textContent='编码动图 '+Math.round(55+p*45)+'%…'});
+    gif.on('finished',blob=>{resolve(blob)});
+    gif.on('abort',()=>reject(new Error('aborted')));
+    try{gif.render()}catch(e){reject(e)}
+  });
+}
+window.makeSparkleSprite=makeSparkleSprite;window.renderAnimFrame=renderAnimFrame;window.encodeGifFromFace=encodeGifFromFace;
+$('gif').onclick=async()=>{
+  if(!ready)return;
+  refresh();draw();
+  const btn=$('gif');
+  btn.disabled=true;btn.textContent='生成中…';
+  $('gifProg').textContent='准备动图…';
+  try{
+    // snapshot face at 1x logical for cleaner GIF (use half of hi-dpi canvas)
+    const face=document.createElement('canvas');face.width=1280;face.height=720;
+    face.getContext('2d').drawImage(cv,0,0,1280,720);
+    const blob=await encodeGifFromFace(face);
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='ToAPIs_GiftCard.gif';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    const mb=(blob.size/1048576).toFixed(2);
+    $('gifProg').textContent='已下载动图（'+mb+' MB）。聊天里记得再发一行兑换链接。';
+    btn.textContent='已下载';
+  }catch(e){
+    console.error(e);
+    $('gifProg').textContent='动图生成失败，请刷新重试或用「下载 PNG」';
+    btn.textContent='生成失败';
+  }
+  setTimeout(()=>{btn.disabled=false;btn.textContent='下载动图'},1800);
+};
+
 Promise.all([Promise.all(['800 88px GT','580 38px GI','450 21px GI','520 27px GJ','520 19px GI'].map(f=>document.fonts.load(f))).catch(()=>{}),new Promise(r=>bg.complete?r():bg.onload=r)]).then(()=>{ready=true;refresh()});
 </script></body></html>
