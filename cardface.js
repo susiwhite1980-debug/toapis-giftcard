@@ -13,19 +13,19 @@ const THEMES={
   glow:'242,106,27',page:['#3a1606','#1d0a03','#0b0401'],accent:'#f26a1b',accentSoft:'#f8b27f',rim:'255,220,190'},
  halloween:{label:'万圣节',bg:'bg_halloween.jpg?v=2',logo:true,base:'#2a0f12',
   ink:'#fbf1e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,226,180,.22)',
-  box:['#fffaf2','#f1e3cd'],boxSh:'rgba(0,0,0,.38)',boxLine:'rgba(196,146,74,.85)',codeInk:'#3a1d0e',codeHi:'rgba(255,255,255,.7)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(80,20,0,.14)',boxLine:null,codeInk:'#3a1d0e',codeHi:'rgba(255,255,255,.7)',
   glow:'214,120,48',page:['#2a1008','#150806','#070303'],accent:'#d9853a',accentSoft:'#e6b878',rim:'226,180,110'},
  christmas:{label:'圣诞节',bg:'bg_christmas.jpg?v=2',logo:true,base:'#0a2e22',
   ink:'#f8f2e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,240,200,.2)',
-  box:['#fffdf6','#f0e8d4'],boxSh:'rgba(0,0,0,.36)',boxLine:'rgba(196,160,88,.85)',codeInk:'#12382a',codeHi:'rgba(255,255,255,.7)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(80,20,0,.14)',boxLine:null,codeInk:'#12382a',codeHi:'rgba(255,255,255,.7)',
   glow:'196,160,88',page:['#0e3326','#07201a','#030c09'],accent:'#c9a45a',accentSoft:'#e3cc8f',rim:'226,200,140'},
  gold:{label:'金卡',bg:'bg_gold.jpg?v=1',logo:true,base:'#3a2a08',
   ink:'#fffaf0',shBig:'rgba(40,25,0,.45)',sh:'rgba(40,25,0,.55)',hi:'rgba(255,240,200,.25)',
-  box:['#fffbf0','#f3e4bf'],boxSh:'rgba(40,25,0,.4)',boxLine:'rgba(184,140,40,.9)',codeInk:'#4a3305',codeHi:'rgba(255,255,255,.7)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(80,20,0,.14)',boxLine:null,codeInk:'#4a3305',codeHi:'rgba(255,255,255,.7)',
   glow:'230,180,60',page:['#2e2206','#171003','#080501'],accent:'#d4a72c',accentSoft:'#f0d58a',rim:'240,210,140'},
  diamond:{label:'钻石卡',bg:'bg_diamond.jpg?v=1',logo:true,base:'#0b0d12',
   ink:'#f4f8ff',shBig:'rgba(0,0,0,.45)',sh:'rgba(0,0,0,.55)',hi:'rgba(220,235,255,.22)',
-  box:['#ffffff','#e6ecf5'],boxSh:'rgba(0,0,0,.45)',boxLine:'rgba(160,180,210,.9)',codeInk:'#1b2433',codeHi:'rgba(255,255,255,.8)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(80,20,0,.14)',boxLine:null,codeInk:'#1b2433',codeHi:'rgba(255,255,255,.8)',
   glow:'170,200,255',page:['#161c28','#0a0d14','#030406'],accent:'#9fb8e6',accentSoft:'#dbe6fb',rim:'210,225,250'}
 };
 const THEME_ORDER=['default','halloween','christmas','gold','diamond'];
@@ -36,6 +36,23 @@ const isLatin=T=>/^(en|es|pt-BR|fr|de|ru|uk)$/.test(T.code);
 const imgCache={};
 function loadImg(src){if(!imgCache[src]){const i=new Image();i.src=src;imgCache[src]=new Promise(r=>{if(i.complete&&i.naturalWidth)r(i);else{i.onload=()=>r(i);i.onerror=()=>r(null)}})}return imgCache[src]}
 function loadTheme(t){const th=THEMES[pickTheme(t)];return Promise.all([loadImg(th.bg),th.logo?loadImg('logo_tile.png?v=1'):Promise.resolve(null)]).then(([bg,logo])=>({th,bg,logo}))}
+/* physical-card finish: fine grain pattern (built once) */
+let GRAIN=null;
+function grainPat(x){if(GRAIN)return GRAIN;const g=document.createElement('canvas');g.width=g.height=256;const c=g.getContext('2d');const d=c.createImageData(256,256);let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+ for(let i=0;i<d.data.length;i+=4){const v=r()*255|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}c.putImageData(d,0,0);GRAIN=x.createPattern(g,'repeat');return GRAIN}
+function finishUnder(x){ /* drawn over the art, under the text */
+ x.save();x.globalAlpha=.06;x.globalCompositeOperation='overlay';x.fillStyle=grainPat(x);x.fillRect(0,0,W,H);x.restore();
+ x.save();const v=x.createLinearGradient(0,0,0,H);v.addColorStop(0,'rgba(255,255,255,.10)');v.addColorStop(.18,'rgba(255,255,255,0)');v.addColorStop(.78,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.16)');x.fillStyle=v;x.fillRect(0,0,W,H);x.restore();
+}
+function finishOver(x){ /* glossy laminate sweep + bevelled edge, over everything */
+ x.save();x.globalCompositeOperation='screen';
+ const s=x.createLinearGradient(W*.18,0,W*.62,H);s.addColorStop(0,'rgba(255,255,255,0)');s.addColorStop(.42,'rgba(255,255,255,0)');s.addColorStop(.5,'rgba(255,255,255,.10)');s.addColorStop(.58,'rgba(255,255,255,0)');s.addColorStop(1,'rgba(255,255,255,0)');
+ x.fillStyle=s;x.fillRect(0,0,W,H);
+ const t=x.createRadialGradient(W*.12,-H*.1,0,W*.12,-H*.1,W*.55);t.addColorStop(0,'rgba(255,255,255,.12)');t.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=t;x.fillRect(0,0,W,H);
+ x.restore();
+ x.save();x.lineWidth=2.2;const e=x.createLinearGradient(0,0,W,H);e.addColorStop(0,'rgba(255,255,255,.55)');e.addColorStop(.45,'rgba(255,255,255,.12)');e.addColorStop(1,'rgba(0,0,0,.30)');x.strokeStyle=e;rr(x,1.1,1.1,W-2.2,H-2.2,R-1);x.stroke();
+ x.lineWidth=1;x.strokeStyle='rgba(0,0,0,.18)';rr(x,3.6,3.6,W-7.2,H-7.2,R-3.5);x.stroke();x.restore();
+}
 function rr(x,X,Y,WW,HH,RR){x.beginPath();x.moveTo(X+RR,Y);x.arcTo(X+WW,Y,X+WW,Y+HH,RR);x.arcTo(X+WW,Y+HH,X,Y+HH,RR);x.arcTo(X,Y+HH,X,Y,RR);x.arcTo(X,Y,X+WW,Y,RR);x.closePath()}
 /* draw(ctx, {T, theme:{th,bg,logo}, name, code, amount, scale, clip}) — clip:false when a CSS border-radius already rounds the canvas (index.html), to avoid a double anti-aliased edge */
 function draw(x,o){
@@ -55,6 +72,7 @@ function draw(x,o){
  x.save();if(o.clip!==false){rr(x,0,0,W,H,R);x.clip();}
  x.fillStyle=th.base;x.fillRect(0,0,W,H);
  if(bg)x.drawImage(bg,0,0,W,H);
+ finishUnder(x);
  if(logo){x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=14;x.shadowOffsetY=5;x.drawImage(logo,67,55,98,98);x.restore();}
  emb(T.cardGift,1127,67,F('520 19px GI'),{align:'right',ls:LS('9.5px'),alpha:.95,max:760});
  const w=emb(o.amount,53,257,'800 88px GT',{big:true,ls:'-3.5px',ltr:true});
@@ -74,6 +92,7 @@ function draw(x,o){
  while(size>12){x.font=F('450 '+size+'px GI');try{x.letterSpacing='0px'}catch(e){}if(x.measureText(tip).width<=tipMax)break;size--}
  emb(tip,53,627,F('450 '+size+'px GI'),{alpha:.9,max:tipMax});
  emb(url,1127,627,urlFont,{align:'right',ls:LS('0.5px'),alpha:.95,ltr:true,color:'#ffffff'});
+ finishOver(x);
  x.restore();
 }
 const FONTS=['800 88px GT','580 38px GI','450 21px GI','450 17px GI','700 18px GI','520 27px GJ','520 19px GI'];
