@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ToAPIs 做卡入口</title>
+<style>
+@font-face{font-family:GI;src:url('Inter.ttf');font-weight:100 900}
+@font-face{font-family:GT;src:url('InterTight.ttf');font-weight:100 900}
+@font-face{font-family:GJ;src:url('JetBrainsMono.ttf');font-weight:100 900}
+body{margin:0;font-family:"Microsoft YaHei",GI,sans-serif;background:#f4f1ee;color:#222}
+.app{max-width:1100px;margin:24px auto;padding:0 20px 40px}
+h1{font-size:22px;margin:0 0 6px}.sub{color:#888;font-size:13px;margin:0 0 16px}
+.form{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#555}
+input{padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:15px;min-width:160px}
+#code{min-width:340px;font-family:Consolas,monospace}
+button{border:0;border-radius:10px;background:#f26a1b;color:#fff;font-weight:700;padding:10px 16px;cursor:pointer}
+button.ghost{background:#fff;color:#f26a1b;border:1px solid #f26a1b}
+.out{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
+.out input{flex:1;min-width:260px}
+canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:block;background:#111}
+.tip{font-size:12px;color:#888;margin-top:12px;line-height:1.6}
+</style></head><body><div class="app">
+<h1>做卡入口</h1>
+<p class="sub">填好后生成客户专属链接。邮件里放礼品卡图或这个链接；客户点开看到卡，再点卡就复制兑换码并跳转充值中心。</p>
+<div class="form">
+<label>客户名<input id="name" value="Slloy AI"></label>
+<label>兑换码<input id="code" value="" placeholder="粘贴兑换码"></label>
+<label>金额<input id="amount" value="$5"></label>
+<button id="mk">生成链接</button>
+<button id="dl" class="ghost">下载 PNG</button>
+</div>
+<div class="out"><input id="url" readonly placeholder="生成后的客户链接"><button id="copy" class="ghost">复制链接</button><a id="open" href="#" target="_blank" rel="noopener">打开预览</a></div>
+<canvas id="cv" width="2560" height="1440"></canvas>
+<p class="tip">链接格式：站点首页 + <code>#n=名字&amp;c=兑换码&amp;a=金额</code>。兑换码只在链接里，不会写进仓库。</p>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const S=2,cv=$('cv'),x=cv.getContext('2d');
+const bg=new Image();bg.src='bg_blank.png';
+let ready=false;
+function base(){return new URL('./',location.href).href.split('#')[0];}
+function buildUrl(){
+  const p=new URLSearchParams();
+  p.set('n',$('name').value||'');p.set('c',($('code').value||'').trim());p.set('a',$('amount').value||'$5');
+  return base()+'#'+p.toString();
+}
+function emb(t,px,py,font,opts={}){
+ x.font=font;x.textBaseline='alphabetic';try{x.letterSpacing=opts.ls||'0px'}catch(e){}
+ x.textAlign=opts.align||'left';x.save();x.globalAlpha=opts.alpha||1;
+ if(opts.big){x.shadowColor='rgba(70,20,0,.16)';x.shadowBlur=10;x.shadowOffsetY=4;x.fillStyle='#fff9f3';x.fillText(t,px,py)}
+ x.shadowColor='rgba(90,30,5,.25)';x.shadowBlur=opts.big?1.5:1.2;x.shadowOffsetX=.6;x.shadowOffsetY=opts.big?1:.8;
+ x.fillStyle='#fff9f3';x.fillText(t,px,py);
+ x.shadowColor='rgba(255,255,255,.8)';x.shadowBlur=0;x.shadowOffsetX=-.5;x.shadowOffsetY=-.5;x.fillText(t,px,py);
+ x.restore();x.textAlign='left';return x.measureText(t).width;
+}
+function rr(X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+function draw(){
+ if(!ready)return;
+ const name=$('name').value||'',code=($('code').value||'').trim(),amount=$('amount').value||'$5';
+ x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,1280,720);x.drawImage(bg,0,0,1280,720);
+ emb('GIFT CARD',1192,92,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
+ const w=emb(amount,118,282,'800 88px GT',{big:true,ls:'-3.5px'});
+ emb('Test Credits',118+w+18,282,'580 38px GI',{ls:'-0.76px',alpha:.96});
+ emb('For '+(name||'you')+' · ToAPIs unified AI API',118,348,'450 21px GI',{alpha:.92});
+ x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(118,440,1044,92,18);
+ const g=x.createLinearGradient(0,440,0,532);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
+ x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
+ x.textAlign='center';x.textBaseline='middle';
+ x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',640,487.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',640,487);x.restore();
+ x.textAlign='left';x.textBaseline='alphabetic';
+ emb('Tap card to copy code & open redeem',118,652,'450 17px GI',{alpha:.9});
+}
+function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw()}
+['name','code','amount'].forEach(i=>$(i).addEventListener('input',refresh));
+$('mk').onclick=()=>{refresh();$('url').select()};
+$('copy').onclick=async()=>{refresh();try{await navigator.clipboard.writeText($('url').value);$('copy').textContent='已复制'}catch(e){$('url').select()}setTimeout(()=>$('copy').textContent='复制链接',1200)};
+$('dl').onclick=()=>{draw();cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ToAPIs_GiftCard.png';a.click()},'image/png')};
+Promise.all([document.fonts.ready,new Promise(r=>bg.complete?r():bg.onload=r)]).then(()=>{ready=true;refresh()});
+</script></body></html>

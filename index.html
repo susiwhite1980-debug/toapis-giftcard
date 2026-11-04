@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ToAPIs Gift Card</title>
+<style>
+@font-face{font-family:GI;src:url('Inter.ttf');font-weight:100 900}
+@font-face{font-family:GT;src:url('InterTight.ttf');font-weight:100 900}
+@font-face{font-family:GJ;src:url('JetBrainsMono.ttf');font-weight:100 900}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;font-family:GI,system-ui,sans-serif;background:linear-gradient(160deg,#fff7f0,#ffe6d4);color:#2b160c}
+.hint{font-size:14px;color:#6b4a38;text-align:center;max-width:640px;line-height:1.5}
+.hint b{color:#f26a1b}
+.stage{width:min(960px,100%);aspect-ratio:1280/720;position:relative;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 18px 40px rgba(120,40,0,.18);outline:none;border:0;padding:0;background:#111}
+.stage canvas{width:100%;height:100%;display:block;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1a7f37;color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
+.toast.show{opacity:1}
+.err{color:#a33;font-size:14px;text-align:center}
+</style></head><body>
+<p class="hint" id="hint">Tap the gift card once. Your redeem code is copied, then ToAPIs opens — paste with <b>Ctrl+V</b> / <b>⌘V</b> and tap Redeem Now.</p>
+<button class="stage" id="card" aria-label="Copy code and redeem"></button>
+<div class="err" id="err" hidden>Missing redeem code in this link.</div>
+<div class="toast" id="toast">Copied. Opening ToAPIs…</div>
+<script>
+const BILLING='https://toapis.com/login?aff=zjQg&redirect='+encodeURIComponent('/zh/dashboard/billing');
+const params=new URLSearchParams((location.hash||location.search||'').replace(/^[#?]/,''));
+const name=params.get('n')||params.get('name')||'';
+const code=(params.get('c')||params.get('code')||'').trim();
+const amount=params.get('a')||params.get('amount')||'$5';
+const S=2,W=1280,H=720;
+const cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;
+document.getElementById('card').appendChild(cv);
+const x=cv.getContext('2d');
+const bg=new Image();bg.src='bg_blank.png';
+function emb(t,px,py,font,opts={}){
+ x.font=font;x.textBaseline='alphabetic';try{x.letterSpacing=opts.ls||'0px'}catch(e){}
+ x.textAlign=opts.align||'left';x.save();x.globalAlpha=opts.alpha||1;
+ if(opts.big){x.shadowColor='rgba(70,20,0,.16)';x.shadowBlur=10;x.shadowOffsetY=4;x.fillStyle='#fff9f3';x.fillText(t,px,py)}
+ x.shadowColor='rgba(90,30,5,.25)';x.shadowBlur=opts.big?1.5:1.2;x.shadowOffsetX=.6;x.shadowOffsetY=opts.big?1:.8;
+ x.fillStyle='#fff9f3';x.fillText(t,px,py);
+ x.shadowColor='rgba(255,255,255,.8)';x.shadowBlur=0;x.shadowOffsetX=-.5;x.shadowOffsetY=-.5;x.fillText(t,px,py);
+ x.restore();x.textAlign='left';return x.measureText(t).width;
+}
+function rr(X,Y,WW,HH,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+WW,Y,X+WW,Y+HH,R);x.arcTo(X+WW,Y+HH,X,Y+HH,R);x.arcTo(X,Y+HH,X,Y,R);x.arcTo(X,Y,X+WW,Y,R);x.closePath()}
+function draw(){
+ x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,W,H);x.drawImage(bg,0,0,W,H);
+ emb('GIFT CARD',1192,92,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
+ const w=emb(amount,118,282,'800 88px GT',{big:true,ls:'-3.5px'});
+ emb('Test Credits',118+w+18,282,'580 38px GI',{ls:'-0.76px',alpha:.96});
+ emb('For '+(name||'you')+' · ToAPIs unified AI API',118,348,'450 21px GI',{alpha:.92});
+ x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(118,440,1044,92,18);
+ const g=x.createLinearGradient(0,440,0,532);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
+ x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
+ x.textAlign='center';x.textBaseline='middle';
+ x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',640,487.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',640,487);x.restore();
+ x.textAlign='left';x.textBaseline='alphabetic';
+ emb('Tap card to copy code & open redeem',118,652,'450 17px GI',{alpha:.9});
+}
+async function copy(t){
+ try{await navigator.clipboard.writeText(t);return true}catch(e){
+  const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand('copy')}catch(_){}
+  ta.remove();return ok;
+ }
+}
+async function go(){
+ if(!code){document.getElementById('err').hidden=false;return}
+ await copy(code);
+ const toast=document.getElementById('toast');toast.classList.add('show');
+ setTimeout(()=>location.href=BILLING,400);
+}
+document.getElementById('card').onclick=go;
+if(!code){document.getElementById('err').hidden=false;document.getElementById('hint').textContent='This gift-card link is missing a redeem code.';}
+Promise.all([document.fonts.ready,new Promise(r=>bg.complete?r():bg.onload=r)]).then(draw);
+</script></body></html>
