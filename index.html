@@ -21,7 +21,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:col
 .stage:focus-visible{outline:2px solid #ffb27a;outline-offset:6px}
 .glow{position:absolute;inset:-12% -9%;border-radius:8%;background:radial-gradient(closest-side,rgba(242,106,27,.7),rgba(242,106,27,.32) 45%,rgba(242,106,27,.1) 75%,transparent);transform:translateZ(-60px);opacity:.55;will-change:opacity,transform;pointer-events:none}
 .face{position:absolute;inset:0;border-radius:3.5%/6%;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 60px -10px rgba(0,0,0,.65),0 0 0 1px rgba(255,210,170,.25) inset}
-.face canvas{position:absolute;left:-5.657%;top:-3.720%;width:111.401%;height:107.143%;display:block;pointer-events:none}
+.face canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .layer{position:absolute;inset:0;pointer-events:none;border-radius:inherit}
 .foil{background:repeating-linear-gradient(115deg,rgba(255,80,40,0) 0%,rgba(255,200,120,.55) 6%,rgba(255,120,220,.45) 12%,rgba(120,220,255,.45) 18%,rgba(255,240,170,.55) 24%,rgba(255,80,40,0) 32%);background-size:300% 300%;background-position:var(--fx,50%) var(--fy,50%);mix-blend-mode:color-dodge;opacity:var(--fo,.08)}
 .sweep{background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.0) 40%,rgba(255,255,255,.55) 48%,rgba(255,236,210,.85) 50%,rgba(255,255,255,.55) 52%,rgba(255,255,255,0) 60%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:var(--sw,-150%) 0;mix-blend-mode:overlay}
@@ -70,7 +70,7 @@ const $=id=>document.getElementById(id);
 const card=$('card'),face=$('face'),glow=$('glow'),flash=$('flash'),reflect=$('reflect'),scene=$('scene');
 
 /* ---------- card face: rendered once to a canvas (same layout as before) ---------- */
-const S=2,W=1280,H=720;
+const S=2,W=1149,H=672;
 const cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;
 face.insertBefore(cv,face.firstChild);
 const x=cv.getContext('2d');
@@ -86,18 +86,21 @@ function emb(t,px,py,font,opts={}){
 }
 function rr(X,Y,WW,HH,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+WW,Y,X+WW,Y+HH,R);x.arcTo(X+WW,Y+HH,X,Y+HH,R);x.arcTo(X,Y+HH,X,Y,R);x.arcTo(X,Y,X+WW,Y,R);x.closePath()}
 function draw(){
- x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,W,H);x.drawImage(bg,0,0,W,H);
- emb('GIFT CARD',1192,92,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
- const w=emb(amount,118,282,'800 88px GT',{big:true,ls:'-3.5px'});
- emb('Test Credits',118+w+18,282,'580 38px GI',{ls:'-0.76px',alpha:.96});
- emb('For '+(name||'you')+' · ToAPIs unified AI API',118,348,'450 21px GI',{alpha:.92});
- x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(118,440,1044,92,18);
- const g=x.createLinearGradient(0,440,0,532);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
+ x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,W,H);
+ x.save();rr(0,0,W,H,Math.round(W*0.035));x.clip();
+ x.drawImage(bg,0,0,W,H);
+ emb('GIFT CARD',1127,67,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
+ const w=emb(amount,53,257,'800 88px GT',{big:true,ls:'-3.5px'});
+ emb('Test Credits',53+w+18,257,'580 38px GI',{ls:'-0.76px',alpha:.96});
+ emb('For '+(name||'you')+' · ToAPIs unified AI API',53,323,'450 21px GI',{alpha:.92});
+ x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(53,415,1044,92,18);
+ const g=x.createLinearGradient(0,415,0,507);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
  x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
  x.textAlign='center';x.textBaseline='middle';
- x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',640,487.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',640,487);x.restore();
+ x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',575,462.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',575,462);x.restore();
  x.textAlign='left';x.textBaseline='alphabetic';
- emb('Tap card to copy code & open redeem',118,652,'450 17px GI',{alpha:.9});
+ emb('Tap card to copy code & open redeem',53,627,'450 17px GI',{alpha:.9});
+ x.restore();
 }
 
 /* ---------- clipboard (started synchronously inside the user gesture) ---------- */

@@ -17,7 +17,7 @@ button.ghost{background:#fff;color:#f26a1b;border:1px solid #f26a1b}
 button:disabled{opacity:.55;cursor:wait}
 .out{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
 .out input{flex:1;min-width:260px}
-canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:block;background:#111}
+canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);display:block;background:transparent}
 .tip{font-size:12px;color:#888;margin-top:12px;line-height:1.6}
 #gifProg{font-size:12px;color:#f26a1b;min-height:1.2em;margin:4px 0 0}
 </style>
@@ -36,7 +36,7 @@ canvas{width:100%;max-width:960px;border-radius:14px;box-shadow:0 10px 30px rgba
 </div>
 <div class="out"><input id="url" readonly placeholder="生成后的客户链接"><button id="copy" class="ghost">复制链接</button><a id="open" href="#" target="_blank" rel="noopener">打开预览</a></div>
 <p id="gifProg"></p>
-<canvas id="cv" width="2560" height="1440"></canvas>
+<canvas id="cv" width="2298" height="1344"></canvas>
 <p class="tip">邮件：点「复制邮件卡片」→ 写信窗口 Ctrl+V。若企微邮箱把链接剥掉，改用「下载 PNG」+「复制链接」，插图后选中图片加超链接。<br>聊天软件（TG / 微信 / Discord 等）：点「下载动图」发 GIF 好看，但动图本身不能跳转，必须再发一行兑换链接；或发 PNG + 链接。<br>链接格式：站点首页 + <code>#n=名字&amp;c=兑换码&amp;a=金额</code>。兑换码只在链接里，不会写进仓库。</p>
 </div>
 <script>
@@ -63,18 +63,21 @@ function rr(X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.
 function draw(){
  if(!ready)return;
  const name=$('name').value||'',code=($('code').value||'').trim(),amount=$('amount').value||'$5';
- x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,1280,720);x.drawImage(bg,0,0,1280,720);
- emb('GIFT CARD',1192,92,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
- const w=emb(amount,118,282,'800 88px GT',{big:true,ls:'-3.5px'});
- emb('Test Credits',118+w+18,282,'580 38px GI',{ls:'-0.76px',alpha:.96});
- emb('For '+(name||'you')+' · ToAPIs unified AI API',118,348,'450 21px GI',{alpha:.92});
- x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(118,440,1044,92,18);
- const g=x.createLinearGradient(0,440,0,532);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
+ x.setTransform(S,0,0,S,0,0);x.clearRect(0,0,1149,672);
+ x.save();rr(0,0,1149,672,40);x.clip();
+ x.drawImage(bg,0,0,1149,672);
+ emb('GIFT CARD',1127,67,'520 19px GI',{align:'right',ls:'9.5px',alpha:.95});
+ const w=emb(amount,53,257,'800 88px GT',{big:true,ls:'-3.5px'});
+ emb('Test Credits',53+w+18,257,'580 38px GI',{ls:'-0.76px',alpha:.96});
+ emb('For '+(name||'you')+' · ToAPIs unified AI API',53,323,'450 21px GI',{alpha:.92});
+ x.save();x.shadowColor='rgba(80,20,0,.14)';x.shadowBlur=18;x.shadowOffsetY=6;rr(53,415,1044,92,18);
+ const g=x.createLinearGradient(0,415,0,507);g.addColorStop(0,'#fff');g.addColorStop(1,'#faf3ed');x.fillStyle=g;x.fill();x.restore();
  x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
  x.textAlign='center';x.textBaseline='middle';
- x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',640,487.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',640,487);x.restore();
+ x.save();x.fillStyle='rgba(255,255,255,.85)';x.fillText(code||'••••',575,462.5);x.fillStyle='#4a2a14';x.fillText(code||'••••',575,462);x.restore();
  x.textAlign='left';x.textBaseline='alphabetic';
- emb('Tap card to copy code & open redeem',118,652,'450 17px GI',{alpha:.9});
+ emb('Tap card to copy code & open redeem',53,627,'450 17px GI',{alpha:.9});
+ x.restore();
 }
 function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw()}
 function canvasPngBlob(){return new Promise(r=>cv.toBlob(r,'image/png'))}
@@ -92,7 +95,7 @@ $('mail').onclick=async()=>{
     if(!blob)throw new Error('png');
     const dataUrl=await blobToDataUrl(blob);
     const u=$('url').value;
-    const html='<a href="'+u.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener"><img src="'+dataUrl+'" width="640" height="360" alt="ToAPIs Gift Card" style="border:0;display:block;max-width:100%;height:auto;" /></a>';
+    const html='<a href="'+u.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener"><img src="'+dataUrl+'" width="640" height="374" alt="ToAPIs Gift Card" style="border:0;display:block;max-width:100%;height:auto;" /></a>';
     const plain='ToAPIs Gift Card\n'+u;
     if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
       await navigator.clipboard.write([new ClipboardItem({
@@ -155,7 +158,7 @@ function renderAnimFrame(out, face, t, spr, dust){
   const amp=13;
   const ry=curX*amp*(Math.PI/180), rx=-curY*amp*.8*(Math.PI/180);
   const floatY=Math.sin(t*Math.PI*2*1.3)*5;
-  const cw=W*0.78, ch=cw*(720/1280);
+  const cw=W*0.78, ch=cw*(672/1149);
   const cx=W/2, cy=H/2+floatY*0.4;
   // glow under card
   ctx.save();
@@ -250,8 +253,8 @@ $('gif').onclick=async()=>{
   $('gifProg').textContent='准备动图…';
   try{
     // snapshot face at 1x logical for cleaner GIF (use half of hi-dpi canvas)
-    const face=document.createElement('canvas');face.width=1280;face.height=720;
-    face.getContext('2d').drawImage(cv,0,0,1280,720);
+    const face=document.createElement('canvas');face.width=1149;face.height=672;
+    face.getContext('2d').drawImage(cv,0,0,1149,672);
     const blob=await encodeGifFromFace(face);
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
