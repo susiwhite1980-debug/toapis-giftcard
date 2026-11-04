@@ -74,5 +74,5 @@ function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw()}
 $('mk').onclick=()=>{refresh();$('url').select()};
 $('copy').onclick=async()=>{refresh();try{await navigator.clipboard.writeText($('url').value);$('copy').textContent='已复制'}catch(e){$('url').select()}setTimeout(()=>$('copy').textContent='复制链接',1200)};
 $('dl').onclick=()=>{draw();cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ToAPIs_GiftCard.png';a.click()},'image/png')};
-Promise.all([document.fonts.ready,new Promise(r=>bg.complete?r():bg.onload=r)]).then(()=>{ready=true;refresh()});
+Promise.all([Promise.all(['800 88px GT','580 38px GI','450 21px GI','520 27px GJ','520 19px GI'].map(f=>document.fonts.load(f))).catch(()=>{}),new Promise(r=>bg.complete?r():bg.onload=r)]).then(()=>{ready=true;refresh()});
 </script></body></html>

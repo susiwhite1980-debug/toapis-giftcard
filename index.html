@@ -68,5 +68,5 @@ async function go(){
 }
 document.getElementById('card').onclick=go;
 if(!code){document.getElementById('err').hidden=false;document.getElementById('hint').textContent='This gift-card link is missing a redeem code.';}
-Promise.all([document.fonts.ready,new Promise(r=>bg.complete?r():bg.onload=r)]).then(draw);
+Promise.all([Promise.all(['800 88px GT','580 38px GI','450 21px GI','520 27px GJ','520 19px GI'].map(f=>document.fonts.load(f))).catch(()=>{}),new Promise(r=>bg.complete?r():bg.onload=r)]).then(draw);
 </script></body></html>
