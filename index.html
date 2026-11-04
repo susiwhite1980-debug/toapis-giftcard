@@ -77,7 +77,16 @@ function pickLang(v){v=(v||'').trim();if(!v)return 'en';const lo=v.toLowerCase()
  if(/^zh-(tw|hk|mo|hant)/.test(lo))return 'zh-TW';if(lo.startsWith('zh'))return 'zh-CN';if(lo.startsWith('pt'))return 'pt-BR';
  const p=lo.split('-')[0];for(const k of LANG_ORDER)if(k.toLowerCase()===p)return k;return 'en';}
 const LANG=pickLang(params.get('l')||params.get('lang'));const T=I18N[LANG];const TT=()=>T;
-const THEME_KEY='default';const TH=GiftFace.THEMES.default;
+const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const TH=GiftFace.THEMES[THEME_KEY];
+(function applyTheme(){if(THEME_KEY==='default')return;const g=TH.glow,p=TH.page,st=document.createElement('style');
+ st.textContent='body{background:radial-gradient(120% 90% at 50% 35%,'+p[0]+' 0%,'+p[1]+' 45%,'+p[2]+' 100%)}'
+ +'.brand{color:'+TH.accentSoft+'}.brand i{background:linear-gradient(90deg,transparent,'+TH.accent+')}'
+ +'.glow{background:radial-gradient(closest-side,rgba('+g+',.7),rgba('+g+',.32) 45%,rgba('+g+',.1) 75%,transparent)}'
+ +'.reflect{background:radial-gradient(closest-side,rgba('+g+',.32),rgba('+g+',.12) 55%,transparent)}'
+ +'.face{box-shadow:0 30px 60px -10px rgba(0,0,0,.65),0 0 0 1px rgba('+TH.rim+',.25) inset}.rim{box-shadow:inset 0 0 0 1.5px rgba('+TH.rim+',.35),inset 0 0 40px rgba('+g+',.14)}'
+ +'.cta{background:linear-gradient(135deg,'+TH.accentSoft+','+TH.accent+' 55%,'+TH.accent+');color:#1a0d06;box-shadow:0 10px 30px -6px rgba('+g+',.55)}'
+ +'.hint b{color:'+TH.accentSoft+'}';
+ document.head.appendChild(st);document.querySelector('meta[name=theme-color]').content=p[2];})();
 const KBD='<span class="kbd">Ctrl+V</span> / <span class="kbd">⌘V</span>',REDEEM='<b>Redeem Now</b>';
 (function applyLang(){const d=document.documentElement;d.lang=T.htmlLang;d.dir=T.dir;document.title=T.title;
  document.querySelector('.brand').innerHTML='<i></i>'+T.brand.replace(/</g,'&lt;')+'<i></i>';
@@ -147,7 +156,7 @@ addEventListener('deviceorientation',e=>{if(e.beta==null)return;if(!oriBase)oriB
  setTarget((e.gamma-oriBase.g)/25,(e.beta-oriBase.b)/25)},{passive:true});
 
 /* ---------- burst / confetti ---------- */
-const bits=[];const COLS=['#f26a1b','#ff9a4d','#ffd2a8','#fff3e6','#ffb347','#ffffff'];
+const bits=[];const COLS=THEME_KEY==='halloween'?['#d9853a','#e6b878','#f6e2bd','#8a3a12','#fff3e6','#c9a45a']:THEME_KEY==='christmas'?['#c9a45a','#e3cc8f','#a52234','#f8f2e2','#2f7a5a','#ffffff']:['#f26a1b','#ff9a4d','#ffd2a8','#fff3e6','#ffb347','#ffffff'];
 function burst(cx,cy){
  const n=RM?24:120;
  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(RM?120:260)+Math.random()*520;

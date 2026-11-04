@@ -2,7 +2,7 @@
  * Card logical size 1149x672, corner radius 40 (matches CSS .face border-radius 3.5%/6%).
  * Rounding is done ONCE here with an anti-aliased canvas clip; backgrounds are fully opaque
  * (no alpha holes), so exported PNGs have clean transparent corners and no black notches.
- * Theme: default only (URL param `t` is ignored).
+ * Themes: default | halloween  (URL param `t`, see README).
  */
 (function(g){
 const W=1149,H=672,R=40;
@@ -10,16 +10,20 @@ const THEMES={
  default:{label:'默认',bg:'bg_blank.png?v=4',logo:false,base:'#f26a1b',
   ink:'#fff9f3',shBig:'rgba(70,20,0,.16)',sh:'rgba(90,30,5,.25)',hi:'rgba(255,255,255,.8)',
   box:['#ffffff','#faf3ed'],boxSh:'rgba(80,20,0,.14)',boxLine:null,codeInk:'#4a2a14',codeHi:'rgba(255,255,255,.85)',
-  glow:'242,106,27',page:['#3a1606','#1d0a03','#0b0401'],accent:'#f26a1b',accentSoft:'#f8b27f',rim:'255,220,190'}
+  glow:'242,106,27',page:['#3a1606','#1d0a03','#0b0401'],accent:'#f26a1b',accentSoft:'#f8b27f',rim:'255,220,190'},
+ halloween:{label:'万圣节',bg:'bg_halloween.jpg?v=2',logo:true,base:'#2a0f12',
+  ink:'#fbf1e2',shBig:'rgba(0,0,0,.35)',sh:'rgba(0,0,0,.45)',hi:'rgba(255,226,180,.22)',
+  box:['#fffaf2','#f1e3cd'],boxSh:'rgba(0,0,0,.38)',boxLine:'rgba(196,146,74,.85)',codeInk:'#3a1d0e',codeHi:'rgba(255,255,255,.7)',
+  glow:'214,120,48',page:['#2a1008','#150806','#070303'],accent:'#d9853a',accentSoft:'#e6b878',rim:'226,180,110'}
 };
-const THEME_ORDER=['default'];
-function pickTheme(v){return 'default'}
+const THEME_ORDER=['default','halloween'];
+function pickTheme(v){v=(v||'').trim().toLowerCase();if(v==='xmas')v='christmas';if(v==='hw')v='halloween';return THEMES[v]?v:'default'}
 const CJK_FB=',"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Hiragino Sans","Microsoft YaHei","Malgun Gothic","Apple SD Gothic Neo","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif';
 const F=f=>f+CJK_FB;
 const isLatin=T=>/^(en|es|pt-BR|fr|de|ru|uk)$/.test(T.code);
 const imgCache={};
 function loadImg(src){if(!imgCache[src]){const i=new Image();i.src=src;imgCache[src]=new Promise(r=>{if(i.complete&&i.naturalWidth)r(i);else{i.onload=()=>r(i);i.onerror=()=>r(null)}})}return imgCache[src]}
-function loadTheme(t){const th=THEMES.default;return Promise.all([loadImg(th.bg),Promise.resolve(null)]).then(([bg,logo])=>({th,bg,logo}))}
+function loadTheme(t){const th=THEMES[pickTheme(t)];return Promise.all([loadImg(th.bg),th.logo?loadImg('logo_tile.png?v=1'):Promise.resolve(null)]).then(([bg,logo])=>({th,bg,logo}))}
 function rr(x,X,Y,WW,HH,RR){x.beginPath();x.moveTo(X+RR,Y);x.arcTo(X+WW,Y,X+WW,Y+HH,RR);x.arcTo(X+WW,Y+HH,X,Y+HH,RR);x.arcTo(X,Y+HH,X,Y,RR);x.arcTo(X,Y,X+WW,Y,RR);x.closePath()}
 /* draw(ctx, {T, theme:{th,bg,logo}, name, code, amount, scale, clip}) — clip:false when a CSS border-radius already rounds the canvas (index.html), to avoid a double anti-aliased edge */
 function draw(x,o){

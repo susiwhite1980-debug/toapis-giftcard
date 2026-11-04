@@ -296,6 +296,7 @@
  },
  "themeParam": "t",
  "themes": [
-  "default"
+  "default",
+  "halloween"
  ]
 }
