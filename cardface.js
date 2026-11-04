@@ -62,7 +62,26 @@ function finishOver(x){ /* glossy laminate sweep + bevelled edge, over everythin
  x.lineWidth=1;x.strokeStyle='rgba(0,0,0,.18)';rr(x,3.6,3.6,W-7.2,H-7.2,R-3.5);x.stroke();x.restore();
 }
 function rr(x,X,Y,WW,HH,RR){x.beginPath();x.moveTo(X+RR,Y);x.arcTo(X+WW,Y,X+WW,Y+HH,RR);x.arcTo(X+WW,Y+HH,X,Y+HH,RR);x.arcTo(X,Y+HH,X,Y,RR);x.arcTo(X,Y,X+WW,Y,RR);x.closePath()}
-/* draw(ctx, {T, theme:{th,bg,logo}, name, code, amount, scale, clip}) — clip:false when a CSS border-radius already rounds the canvas (index.html), to avoid a double anti-aliased edge */
+/* draw(ctx, {T, theme:{th,bg,logo}, name, code, amount, from, scale, clip}) — clip:false when a CSS border-radius already rounds the canvas (index.html), to avoid a double anti-aliased edge */
+/* gilded / 鎏金 foil stamp for the sender name */
+/* sender name (送卡人): card's normal font, subtle gilded gold fill, name only */
+function drawFrom(x,T,th,themeKey,from,px,py){
+ const onGold=themeKey==='gold',onOrange=themeKey==='default'||th.base==='#f26a1b';let size=26;
+ x.save();x.textAlign='left';x.textBaseline='alphabetic';try{x.direction='ltr';x.letterSpacing='0.3px'}catch(e){}
+ const setF=()=>{x.font=F('660 '+size+'px GI')};setF();
+ while(size>16&&x.measureText(from).width>700){size--;setF()}
+ const top=py-size*.82,bot=py+size*.1;
+ // light shadow; warm-brown on the orange card, firmer on the gold card so it separates
+ x.shadowColor=onGold?'rgba(35,18,0,.7)':onOrange?'rgba(95,32,0,.6)':'rgba(0,0,0,.38)';
+ x.shadowBlur=onGold?4:onOrange?3.5:3;x.shadowOffsetY=onGold?1.6:1.4;
+ const gr=x.createLinearGradient(0,top,0,bot);
+ if(onOrange){gr.addColorStop(0,'#fffbea');gr.addColorStop(.45,'#ffe7a3');gr.addColorStop(.78,'#f2c35a');gr.addColorStop(1,'#fff3cc')}
+ else{gr.addColorStop(0,'#fff3c4');gr.addColorStop(.45,'#f0c75e');gr.addColorStop(.75,'#c9971f');gr.addColorStop(1,'#ffe9a8')}
+ x.fillStyle=gr;x.fillText(from,px,py);
+ x.shadowColor='transparent';x.shadowBlur=0;x.shadowOffsetY=0;
+ if(onGold||onOrange){x.lineWidth=.7;x.strokeStyle=onGold?'rgba(70,42,6,.55)':'rgba(130,60,0,.4)';x.strokeText(from,px,py)}
+ x.restore();
+}
 function draw(x,o){
  const T=o.T,th=o.theme.th,bg=o.theme.bg,logo=o.theme.logo,S=o.scale||2;
  const LS=v=>isLatin(T)?v:'0px';
@@ -86,6 +105,9 @@ function draw(x,o){
  const w=emb(o.amount,53,257,'800 88px GT',{big:true,ls:'-3.5px',ltr:true});
  emb(T.cardCredits,53+w+18,257,F('580 38px GI'),{ls:LS('-0.76px'),alpha:.96,max:Math.max(200,1096-(53+w+18))});
  emb(o.name?T.cardFor.replace('{name}',o.name):T.cardForAnon,53,323,F('450 21px GI'),{alpha:.92,max:1040});
+ // sender name (white, card font) directly under the 致… line
+ const from=(o.from||'').trim();
+ if(from) emb(from,53,366,F('600 24px GI'),{alpha:.95,max:1040,ltr:!/[\u0600-\u06ff]/.test(from)?true:false});
  x.save();x.shadowColor=th.boxSh;x.shadowBlur=18;x.shadowOffsetY=6;rr(x,53,415,1044,92,18);
  const gr=x.createLinearGradient(0,415,0,507);gr.addColorStop(0,th.box[0]);gr.addColorStop(1,th.box[1]);x.fillStyle=gr;x.fill();x.restore();
  if(th.boxLine){x.save();rr(x,57.5,419.5,1035,83,15);x.strokeStyle=th.boxLine;x.lineWidth=1;x.stroke();x.restore();}
@@ -103,7 +125,7 @@ function draw(x,o){
  finishOver(x);
  x.restore();
 }
-const FONTS=['800 88px GT','580 38px GI','450 21px GI','450 17px GI','700 18px GI','520 27px GJ','520 19px GI'];
+const FONTS=['660 26px GI','800 88px GT','580 38px GI','450 21px GI','450 17px GI','700 18px GI','520 27px GJ','520 19px GI'];
 function loadFonts(T){return Promise.all(FONTS.map(f=>document.fonts.load(f,T.cardGift+T.cardCredits+T.cardTap+T.cardFor))).catch(()=>{})}
 g.GiftFace={W,H,R,THEMES,THEME_ORDER,pickTheme,loadTheme,draw,loadFonts};
 })(window);
