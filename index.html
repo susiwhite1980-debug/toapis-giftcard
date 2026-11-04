@@ -74,7 +74,7 @@ const S=2,W=1149,H=672;
 const cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;
 face.insertBefore(cv,face.firstChild);
 const x=cv.getContext('2d');
-const bg=new Image();bg.src='bg_blank.png';
+const bg=new Image();bg.src='bg_blank.png?v=2';
 function emb(t,px,py,font,opts={}){
  x.font=font;x.textBaseline='alphabetic';try{x.letterSpacing=opts.ls||'0px'}catch(e){}
  x.textAlign=opts.align||'left';x.save();x.globalAlpha=opts.alpha||1;
