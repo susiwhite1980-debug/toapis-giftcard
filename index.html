@@ -1,22 +1,63 @@
 <!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#140803"><link rel="icon" href="data:,">
 <title>ToAPIs Gift Card</title>
 <style>
 @font-face{font-family:GI;src:url('Inter.ttf');font-weight:100 900}
 @font-face{font-family:GT;src:url('InterTight.ttf');font-weight:100 900}
 @font-face{font-family:GJ;src:url('JetBrainsMono.ttf');font-weight:100 900}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;font-family:GI,system-ui,sans-serif;background:linear-gradient(160deg,#fff7f0,#ffe6d4);color:#2b160c}
-.hint{font-size:14px;color:#6b4a38;text-align:center;max-width:640px;line-height:1.5}
-.hint b{color:#f26a1b}
-.stage{width:min(960px,100%);aspect-ratio:1280/720;position:relative;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 18px 40px rgba(120,40,0,.18);outline:none;border:0;padding:0;background:#111}
-.stage canvas{width:100%;height:100%;display:block;pointer-events:none}
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1a7f37;color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
-.toast.show{opacity:1}
-.err{color:#a33;font-size:14px;text-align:center}
+[hidden]{display:none!important}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 18px;font-family:GI,system-ui,sans-serif;color:#fbe9dc;overflow:hidden;
+ background:radial-gradient(120% 90% at 50% 35%,#3a1606 0%,#1d0a03 45%,#0b0401 100%)}
+#bgfx,#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#bgfx{z-index:0}#fx{z-index:5}
+.brand{position:relative;z-index:2;font:600 12px/1 GI,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#f8b27f;opacity:0;animation:fadeUp 1s .9s cubic-bezier(.2,.8,.2,1) forwards}
+.brand i{display:inline-block;width:26px;height:1px;background:linear-gradient(90deg,transparent,#f26a1b);vertical-align:middle;margin:0 12px}
+.brand i:last-child{transform:scaleX(-1)}
+.scene{position:relative;z-index:2;width:min(900px,92vw,calc((100dvh - 240px) * 1149 / 672));min-width:280px;aspect-ratio:1149/672;perspective:1400px}
+.stage{all:unset;display:block;position:absolute;inset:0;cursor:pointer;transform-style:preserve-3d;will-change:transform;transform:translate3d(0,120px,0) rotateX(70deg) scale(.7);opacity:0;border-radius:3.5%/6%}
+.stage:focus-visible{outline:2px solid #ffb27a;outline-offset:6px}
+.glow{position:absolute;inset:-12% -9%;border-radius:8%;background:radial-gradient(closest-side,rgba(242,106,27,.7),rgba(242,106,27,.32) 45%,rgba(242,106,27,.1) 75%,transparent);transform:translateZ(-60px);opacity:.55;will-change:opacity,transform;pointer-events:none}
+.face{position:absolute;inset:0;border-radius:3.5%/6%;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 60px -10px rgba(0,0,0,.65),0 0 0 1px rgba(255,210,170,.25) inset}
+.face canvas{position:absolute;left:-5.657%;top:-3.720%;width:111.401%;height:107.143%;display:block;pointer-events:none}
+.layer{position:absolute;inset:0;pointer-events:none;border-radius:inherit}
+.foil{background:repeating-linear-gradient(115deg,rgba(255,80,40,0) 0%,rgba(255,200,120,.55) 6%,rgba(255,120,220,.45) 12%,rgba(120,220,255,.45) 18%,rgba(255,240,170,.55) 24%,rgba(255,80,40,0) 32%);background-size:300% 300%;background-position:var(--fx,50%) var(--fy,50%);mix-blend-mode:color-dodge;opacity:var(--fo,.08)}
+.sweep{background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.0) 40%,rgba(255,255,255,.55) 48%,rgba(255,236,210,.85) 50%,rgba(255,255,255,.55) 52%,rgba(255,255,255,0) 60%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:var(--sw,-150%) 0;mix-blend-mode:overlay}
+.glare{background:radial-gradient(circle at var(--gx,50%) var(--gy,30%),rgba(255,250,240,.32),rgba(255,245,230,.08) 28%,transparent 55%);opacity:var(--go,.9)}
+.rim{box-shadow:inset 0 0 0 1.5px rgba(255,220,190,.35),inset 0 0 40px rgba(255,170,110,.18)}
+.flash{background:radial-gradient(circle at var(--tx,50%) var(--ty,50%),rgba(255,255,255,.95),rgba(255,200,150,.4) 30%,transparent 65%);opacity:0;mix-blend-mode:screen}
+.reflect{position:absolute;left:4%;right:4%;top:100%;height:30%;margin-top:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(242,106,27,.32),rgba(242,106,27,.12) 55%,transparent);pointer-events:none;will-change:opacity,transform}
+.hint{position:relative;z-index:2;font-size:14px;color:#e9c7b1;text-align:center;max-width:640px;line-height:1.6;margin:0;opacity:0;animation:fadeUp 1s 1.2s cubic-bezier(.2,.8,.2,1) forwards}
+.hint b{color:#ff9a5a;font-weight:650}
+.kbd{display:inline-block;padding:1px 7px;border-radius:6px;border:1px solid rgba(255,170,120,.35);background:rgba(255,140,70,.1);font:600 12px/1.6 GJ,monospace;color:#ffc79f}
+.cta{position:relative;z-index:2;display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;border:0;cursor:pointer;font:650 15px GI,sans-serif;color:#fff;background:linear-gradient(135deg,#ff8a3d,#f26a1b 55%,#d9500c);box-shadow:0 10px 30px -6px rgba(242,106,27,.65),inset 0 1px 0 rgba(255,255,255,.35);opacity:0;animation:fadeUp 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards;transition:transform .15s}
+.cta:hover{transform:translateY(-1px)}.cta:active{transform:scale(.97)}
+.toast{position:fixed;z-index:10;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:rgba(26,127,55,.95);color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:opacity .2s,transform .3s cubic-bezier(.2,.9,.3,1.3);pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.err{position:relative;z-index:2;color:#ff9b8a;font-size:14px;text-align:center}
+.shake{animation:shake .45s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes shake{20%,60%{translate:-8px 0}40%,80%{translate:8px 0}}
+@media (max-width:600px){body{gap:16px}.hint{font-size:13px}.brand{font-size:10px}}
+@media (prefers-reduced-motion:reduce){.brand,.hint,.cta{animation-duration:.01s;animation-delay:0s}}
 </style></head><body>
-<p class="hint" id="hint">Tap the gift card once. Your redeem code is copied, then ToAPIs opens — paste with <b>Ctrl+V</b> / <b>⌘V</b> and tap Redeem Now.</p>
-<button class="stage" id="card" aria-label="Copy code and redeem"></button>
+<canvas id="bgfx"></canvas>
+<div class="brand"><i></i>ToAPIs · Gift Card<i></i></div>
+<div class="scene" id="scene">
+ <button class="stage" id="card" aria-label="Copy code and redeem">
+  <div class="glow" id="glow"></div>
+  <div class="face" id="face">
+   <div class="layer foil"></div><div class="layer sweep"></div><div class="layer glare"></div><div class="layer rim"></div><div class="layer flash" id="flash"></div>
+  </div>
+ </button>
+ <div class="reflect" id="reflect"></div>
+</div>
+<p class="hint" id="hint">Tap the gift card once. Your redeem code is copied, then ToAPIs opens — paste with <span class="kbd">Ctrl+V</span> / <span class="kbd">⌘V</span> and tap <b>Redeem Now</b>.</p>
+<button class="cta" id="cta" type="button">Copy code &amp; redeem →</button>
 <div class="err" id="err" hidden>Missing redeem code in this link.</div>
+<canvas id="fx"></canvas>
 <div class="toast" id="toast">Copied. Opening ToAPIs…</div>
 <script>
 const BILLING='https://toapis.com/login?aff=zjQg&redirect='+encodeURIComponent('/zh/dashboard/billing');
@@ -24,9 +65,14 @@ const params=new URLSearchParams((location.hash||location.search||'').replace(/^
 const name=params.get('n')||params.get('name')||'';
 const code=(params.get('c')||params.get('code')||'').trim();
 const amount=params.get('a')||params.get('amount')||'$5';
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+const card=$('card'),face=$('face'),glow=$('glow'),flash=$('flash'),reflect=$('reflect'),scene=$('scene');
+
+/* ---------- card face: rendered once to a canvas (same layout as before) ---------- */
 const S=2,W=1280,H=720;
 const cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;
-document.getElementById('card').appendChild(cv);
+face.insertBefore(cv,face.firstChild);
 const x=cv.getContext('2d');
 const bg=new Image();bg.src='bg_blank.png';
 function emb(t,px,py,font,opts={}){
@@ -53,20 +99,152 @@ function draw(){
  x.textAlign='left';x.textBaseline='alphabetic';
  emb('Tap card to copy code & open redeem',118,652,'450 17px GI',{alpha:.9});
 }
-async function copy(t){
- try{await navigator.clipboard.writeText(t);return true}catch(e){
-  const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
-  let ok=false;try{ok=document.execCommand('copy')}catch(_){}
-  ta.remove();return ok;
+
+/* ---------- clipboard (started synchronously inside the user gesture) ---------- */
+function legacyCopy(t){
+ const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+ document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);
+ let ok=false;try{ok=document.execCommand('copy')}catch(_){}
+ ta.remove();return ok;
+}
+function copy(t){
+ if(navigator.clipboard&&window.isSecureContext){
+  return navigator.clipboard.writeText(t).then(()=>true,()=>legacyCopy(t));
  }
+ return Promise.resolve(legacyCopy(t));
 }
-async function go(){
- if(!code){document.getElementById('err').hidden=false;return}
- await copy(code);
- const toast=document.getElementById('toast');toast.classList.add('show');
- setTimeout(()=>location.href=BILLING,400);
+
+/* ---------- canvases (DPR aware) ---------- */
+const bgc=$('bgfx'),bx=bgc.getContext('2d'),fxc=$('fx'),fx=fxc.getContext('2d');
+let VW=0,VH=0,DPR=1;
+function resize(){
+ DPR=Math.min(window.devicePixelRatio||1,2);VW=innerWidth;VH=innerHeight;
+ for(const c of [bgc,fxc]){c.width=Math.round(VW*DPR);c.height=Math.round(VH*DPR)}
+ bx.setTransform(DPR,0,0,DPR,0,0);fx.setTransform(DPR,0,0,DPR,0,0);
 }
-document.getElementById('card').onclick=go;
-if(!code){document.getElementById('err').hidden=false;document.getElementById('hint').textContent='This gift-card link is missing a redeem code.';}
-Promise.all([Promise.all(['800 88px GT','580 38px GI','450 21px GI','520 27px GJ','520 19px GI'].map(f=>document.fonts.load(f))).catch(()=>{}),new Promise(r=>bg.complete?r():bg.onload=r)]).then(draw);
+addEventListener('resize',resize);resize();
+// pre-rendered sparkle sprite
+const spr=document.createElement('canvas');spr.width=spr.height=64;
+(()=>{const s=spr.getContext('2d');const g=s.createRadialGradient(32,32,0,32,32,32);
+ g.addColorStop(0,'rgba(255,245,230,1)');g.addColorStop(.18,'rgba(255,190,130,.85)');g.addColorStop(.45,'rgba(242,106,27,.25)');g.addColorStop(1,'rgba(242,106,27,0)');
+ s.fillStyle=g;s.fillRect(0,0,64,64);
+ s.globalCompositeOperation='lighter';s.fillStyle='rgba(255,240,220,.9)';s.fillRect(31,6,2,52);s.fillRect(6,31,52,2);})();
+
+const N=RM?18:(VW<600?45:80);
+const dust=[];for(let i=0;i<N;i++)dust.push(newDust(true));
+function newDust(init){return{x:Math.random()*VW,y:init?Math.random()*VH:VH+20,r:2+Math.random()*7,v:6+Math.random()*22,ph:Math.random()*6.28,tw:.6+Math.random()*1.8,dx:(Math.random()-.5)*10}}
+
+/* ---------- interaction state ---------- */
+let tgtX=0,tgtY=0,curX=0,curY=0,velX=0,velY=0,lastInput=-1e9,pointerActive=false;
+let gx=50,gy=30;
+function setTarget(nx,ny){tgtX=Math.max(-1,Math.min(1,nx));tgtY=Math.max(-1,Math.min(1,ny));lastInput=performance.now()}
+scene.addEventListener('pointermove',e=>{const r=scene.getBoundingClientRect();setTarget((e.clientX-r.left)/r.width*2-1,(e.clientY-r.top)/r.height*2-1);pointerActive=true},{passive:true});
+scene.addEventListener('pointerleave',()=>{pointerActive=false;lastInput=0});
+addEventListener('pointermove',e=>{if(!pointerActive&&e.pointerType==='mouse'){setTarget((e.clientX/VW*2-1)*.45,(e.clientY/VH*2-1)*.45)}},{passive:true});
+// device orientation (Android / browsers that don't need a permission prompt)
+let oriBase=null;
+addEventListener('deviceorientation',e=>{if(e.beta==null)return;if(!oriBase)oriBase={b:e.beta,g:e.gamma};
+ setTarget((e.gamma-oriBase.g)/25,(e.beta-oriBase.b)/25)},{passive:true});
+
+/* ---------- burst / confetti ---------- */
+const bits=[];const COLS=['#f26a1b','#ff9a4d','#ffd2a8','#fff3e6','#ffb347','#ffffff'];
+function burst(cx,cy){
+ const n=RM?24:120;
+ for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(RM?120:260)+Math.random()*520;
+  bits.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-200,life:0,max:.9+Math.random()*.8,w:4+Math.random()*7,h:2+Math.random()*4,rot:Math.random()*6.28,vr:(Math.random()-.5)*16,c:COLS[i%COLS.length],spark:Math.random()<.35});}
+ ring={x:cx,y:cy,t:0};
+}
+let ring=null,pulseT=-1;
+
+/* ---------- main loop ---------- */
+const T0=performance.now();let entered=false,last=T0,frames=0,fpsAcc=0;
+window.__fps={samples:[]};
+const easeOutBack=t=>{const c1=1.35,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)};
+const easeOutCubic=t=>1-Math.pow(1-t,3);
+let ready=false;
+function frame(now){
+ const dt=Math.min(.05,(now-last)/1000);last=now;
+ frames++;fpsAcc+=dt;if(fpsAcc>=.5){window.__fps.samples.push(Math.round(frames/fpsAcc));frames=0;fpsAcc=0}
+ const t=(now-T0)/1000;
+
+ // idle float when no recent input
+ const idle=now-lastInput>2500;
+ const ax=idle?Math.sin(t*.7)*.35:tgtX, ay=idle?Math.cos(t*.55)*.25:tgtY;
+ // critically-damped-ish spring
+ const k=RM?40:90,d=RM?14:16;
+ velX+=((ax-curX)*k-velX*d)*dt;velY+=((ay-curY)*k-velY*d)*dt;curX+=velX*dt;curY+=velY*dt;
+
+ // entrance (1.5s)
+ const ED=RM?.35:1.5;let e=ready?Math.min(1,(t-startAt)/ED):0;if(e<0)e=0;
+ const eb=RM?easeOutCubic(e):easeOutBack(e),ec=easeOutCubic(e);
+ const enterRX=(1-eb)*70,enterY=(1-eb)*120,enterS=.7+.3*eb,enterRZ=(1-ec)*-6;
+ const amp=RM?4:14;
+ const ry=curX*amp,rx=-curY*amp*.8;
+ const floatY=RM?0:Math.sin(t*1.3)*6*ec;
+ let ps=1;if(pulseT>=0){const p=(now-pulseT)/1000;ps=1+.05*Math.sin(Math.min(1,p/.35)*Math.PI);if(p>.35)pulseT=-1}
+ card.style.transform=`translate3d(0,${(enterY+floatY).toFixed(2)}px,0) rotateX(${(enterRX+rx).toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${enterRZ.toFixed(3)}deg) scale(${(enterS*ps).toFixed(4)})`;
+ card.style.opacity=Math.min(1,e*2.5).toFixed(3);
+ reflect.style.opacity=(ec*(.75-floatY/40)).toFixed(3);
+ reflect.style.transform=`translateX(${(curX*-12).toFixed(1)}px) scaleX(${(1-floatY/120).toFixed(3)})`;
+
+ // lighting
+ gx=50+curX*45;gy=35+curY*40;
+ const st=face.style;
+ st.setProperty('--gx',gx.toFixed(1)+'%');st.setProperty('--gy',gy.toFixed(1)+'%');
+ st.setProperty('--fx',(50+curX*60+t*(RM?0:3)%100).toFixed(1)+'%');st.setProperty('--fy',(50+curY*60).toFixed(1)+'%');
+ st.setProperty('--fo',(.05+Math.min(.12,Math.hypot(curX,curY)*.12)).toFixed(3));
+ // light sweep every ~4.2s (first one right after entrance)
+ const cyc=RM?1e9:4.2,sp=((t-startAt-1.1)%cyc+cyc)%cyc/1.3;
+ st.setProperty('--sw',(sp<1?(-150+sp*300):250).toFixed(1)+'%');
+ glow.style.opacity=(ec*(.45+.15*Math.sin(t*1.6)+(ps-1)*6)).toFixed(3);
+ glow.style.transform=`translateZ(-60px) translate(${(curX*-14).toFixed(1)}px,${(curY*-10+20).toFixed(1)}px)`;
+
+ // background sparkles
+ bx.clearRect(0,0,VW,VH);bx.globalCompositeOperation='lighter';
+ for(const p of dust){
+  if(!RM){p.y-=p.v*dt;p.x+=Math.sin(t*.5+p.ph)*p.dx*dt}
+  if(p.y<-20){Object.assign(p,newDust(false))}
+  const a=.25+.75*Math.pow(.5+.5*Math.sin(t*p.tw+p.ph),3);
+  bx.globalAlpha=a*.85;const s=p.r*4,px=p.x-curX*p.r*3,py=p.y-curY*p.r*2;
+  bx.drawImage(spr,px-s/2,py-s/2,s,s);
+ }
+ bx.globalAlpha=1;bx.globalCompositeOperation='source-over';
+
+ // foreground fx
+ fx.clearRect(0,0,VW,VH);
+ if(ring){ring.t+=dt;const p=ring.t/.7;if(p>=1)ring=null;else{fx.strokeStyle=`rgba(255,190,130,${(1-p)*.8})`;fx.lineWidth=3*(1-p)+.5;fx.beginPath();fx.arc(ring.x,ring.y,20+p*Math.max(VW,VH)*.45,0,6.283);fx.stroke()}}
+ for(let i=bits.length-1;i>=0;i--){const b=bits[i];b.life+=dt;if(b.life>b.max){bits.splice(i,1);continue}
+  b.vy+=900*dt;b.vx*=1-1.6*dt;b.vy*=1-1.2*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.rot+=b.vr*dt;
+  const al=1-Math.pow(b.life/b.max,2);
+  if(b.spark){fx.globalCompositeOperation='lighter';fx.globalAlpha=al;const s=b.w*3;fx.drawImage(spr,b.x-s/2,b.y-s/2,s,s);fx.globalCompositeOperation='source-over'}
+  else{fx.globalAlpha=al;fx.save();fx.translate(b.x,b.y);fx.rotate(b.rot);fx.scale(1,Math.cos(b.rot*1.7));fx.fillStyle=b.c;fx.fillRect(-b.w/2,-b.h/2,b.w,b.h);fx.restore()}
+ }
+ fx.globalAlpha=1;
+ requestAnimationFrame(frame);
+}
+let startAt=0;
+requestAnimationFrame(frame);
+
+/* ---------- click ---------- */
+let busy=false;
+function go(ev){
+ if(!code){$('err').hidden=false;card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');return}
+ const p=copy(code); // start copy immediately, inside the user gesture
+ if(busy)return;busy=true;
+ // effects
+ const r=face.getBoundingClientRect();
+ const cx=ev&&ev.clientX?ev.clientX:r.left+r.width/2, cy=ev&&ev.clientY?ev.clientY:r.top+r.height/2;
+ flash.style.setProperty('--tx',((cx-r.left)/r.width*100)+'%');flash.style.setProperty('--ty',((cy-r.top)/r.height*100)+'%');
+ flash.animate([{opacity:0},{opacity:.9,offset:.15},{opacity:0}],{duration:RM?250:650,easing:'ease-out'});
+ pulseT=performance.now();burst(cx,cy);
+ const toast=$('toast');
+ p.then(ok=>{toast.textContent=ok?'Copied. Opening ToAPIs…':'Opening ToAPIs… code: '+code;toast.classList.add('show')});
+ setTimeout(()=>{location.href=BILLING},900);
+ setTimeout(()=>{busy=false},2500);
+}
+card.addEventListener('click',go);
+$('cta').addEventListener('click',go);
+if(!code){$('err').hidden=false;$('hint').textContent='This gift-card link is missing a redeem code.';$('cta').hidden=true}
+
+Promise.all([Promise.all(['800 88px GT','580 38px GI','450 21px GI','450 17px GI','520 27px GJ','520 19px GI'].map(f=>document.fonts.load(f))).catch(()=>{}),new Promise(r=>bg.complete?r():(bg.onload=bg.onerror=r))]).then(()=>{draw();startAt=(performance.now()-T0)/1000+.05;ready=true});
 </script></body></html>
