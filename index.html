@@ -95,7 +95,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:col
 <div class="err" id="err" hidden>Missing redeem code in this link.</div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast">Copied. Opening ToAPIs…</div>
-<script src="cardface.js?v=13"></script>
+<script src="cardface.js?v=14"></script>
 <script>
 const BILLING='https://toapis.com/login?aff=zjQg&redirect=/dashboard/billing';
 const params=new URLSearchParams((location.hash||location.search||'').replace(/^[#?]/,''));
@@ -147,7 +147,12 @@ const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const T
  const BG_MAP={
   silk_flow:'silk_flow.mp4?v=2', leaves_flow:'leaves_flow.mp4?v=1',
   feather_temple:'feather_temple.mp4?v=1', diamond_hall:'diamond_hall.mp4?v=1',
-  stardust_observatory:'stardust_observatory.mp4?v=1', petal_greenhouse:'petal_greenhouse.mp4?v=2'
+  stardust_observatory:'stardust_observatory.mp4?v=1', petal_greenhouse:'petal_greenhouse.mp4?v=2',
+  neon_city:'neon_city.mp4?v=1', aurora_sea:'aurora_sea.mp4?v=1',
+  courtyard_leaves:'courtyard_leaves.mp4?v=1',
+  greek_temple_sunset:'greek_temple_sunset.mp4?v=1',
+  greek_amphitheater_moon:'greek_amphitheater_moon.mp4?v=1',
+  greek_colonnade_sea:'greek_colonnade_sea.mp4?v=1'
  };
  const BGS=Object.values(BG_MAP);
  function pickBg(raw){
@@ -155,6 +160,9 @@ const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const T
   if(k==='silk')k='silk_flow'; if(k==='leaves')k='leaves_flow';
   if(k==='feather')k='feather_temple'; if(k==='diamond')k='diamond_hall';
   if(k==='stardust')k='stardust_observatory'; if(k==='petal')k='petal_greenhouse';
+  if(k==='neon')k='neon_city'; if(k==='aurora')k='aurora_sea';
+  if(k==='courtyard')k='courtyard_leaves';
+  if(k==='greek_temple'||k==='temple')k='greek_temple_sunset'; if(k==='greek_moon'||k==='amphitheater')k='greek_amphitheater_moon'; if(k==='greek_sea'||k==='colonnade')k='greek_colonnade_sea';
   if(BG_MAP[k]) return BG_MAP[k];
   return BGS[Math.floor(Math.random()*BGS.length)];
  }

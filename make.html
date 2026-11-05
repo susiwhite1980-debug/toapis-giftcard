@@ -198,7 +198,7 @@ canvas#cv{
 @media (max-width:960px){.preview{position:static}}
 </style>
 <script src="gif.js"></script>
-<script src="cardface.js?v=13"></script>
+<script src="cardface.js?v=14"></script>
 </head>
 <body>
 <div class="app">
@@ -252,6 +252,12 @@ canvas#cv{
           <option value="christmas2">圣诞节·实体</option>
           <option value="gold">金卡</option>
           <option value="diamond">钻石卡</option>
+          <option value="neon">霓虹赛博</option>
+          <option value="aurora">极光海</option>
+          <option value="earth">地球</option>
+          <option value="jupiter">木星</option>
+          <option value="saturn">土星</option>
+          <option value="venus">金星</option>
         </select>
         <div class="theme-grid" id="themeGrid" role="listbox" aria-label="卡面主题">
           <button type="button" class="theme-tile active" data-theme="default" style="background-image:url('bg_blank.png?v=4')" aria-label="默认"><span class="cap">默认</span></button>
@@ -261,6 +267,12 @@ canvas#cv{
           <button type="button" class="theme-tile" data-theme="christmas2" style="background-image:url('bg_christmas2.jpg?v=1')" aria-label="圣诞节·实体"><span class="cap">圣诞节·实体</span></button>
           <button type="button" class="theme-tile" data-theme="gold" style="background-image:url('bg_gold.jpg?v=1')" aria-label="金卡"><span class="cap">金卡</span></button>
           <button type="button" class="theme-tile" data-theme="diamond" style="background-image:url('bg_diamond.jpg?v=1')" aria-label="钻石卡"><span class="cap">钻石卡</span></button>
+          <button type="button" class="theme-tile" data-theme="neon" style="background-image:url('bg_neon.jpg?v=1')" aria-label="霓虹赛博"><span class="cap">霓虹赛博</span></button>
+          <button type="button" class="theme-tile" data-theme="aurora" style="background-image:url('bg_aurora.jpg?v=1')" aria-label="极光海"><span class="cap">极光海</span></button>
+          <button type="button" class="theme-tile" data-theme="earth" style="background-image:url('bg_earth.jpg?v=1')" aria-label="地球"><span class="cap">地球</span></button>
+          <button type="button" class="theme-tile" data-theme="jupiter" style="background-image:url('bg_jupiter.jpg?v=1')" aria-label="木星"><span class="cap">木星</span></button>
+          <button type="button" class="theme-tile" data-theme="saturn" style="background-image:url('bg_saturn.jpg?v=1')" aria-label="土星"><span class="cap">土星</span></button>
+          <button type="button" class="theme-tile" data-theme="venus" style="background-image:url('bg_venus.jpg?v=1')" aria-label="金星"><span class="cap">金星</span></button>
         </div>
       </section>
 
@@ -276,6 +288,12 @@ canvas#cv{
           <option value="diamond_hall">碎钻大厅</option>
           <option value="stardust_observatory">星尘天文台</option>
           <option value="petal_greenhouse">花瓣花房</option>
+          <option value="neon_city">霓虹城市</option>
+          <option value="aurora_sea">极光海面</option>
+          <option value="courtyard_leaves">荒院落叶</option>
+          <option value="greek_temple_sunset">夕阳神殿</option>
+          <option value="greek_amphitheater_moon">月夜剧场</option>
+          <option value="greek_colonnade_sea">海边柱廊</option>
         </select>
         <div class="bg-grid" id="bgGrid" role="listbox" aria-label="客户页背景">
           <button type="button" class="bg-tile random active" data-bg="" aria-label="随机"><span class="cap">随机</span></button>
@@ -285,6 +303,12 @@ canvas#cv{
           <button type="button" class="bg-tile" data-bg="diamond_hall" style="background-image:url('bg_thumb_diamond_hall.jpg')" aria-label="碎钻大厅"><span class="cap">碎钻大厅</span></button>
           <button type="button" class="bg-tile" data-bg="stardust_observatory" style="background-image:url('bg_thumb_stardust_observatory.jpg')" aria-label="星尘天文台"><span class="cap">星尘天文台</span></button>
           <button type="button" class="bg-tile" data-bg="petal_greenhouse" style="background-image:url('bg_thumb_petal_greenhouse.jpg')" aria-label="花瓣花房"><span class="cap">花瓣花房</span></button>
+          <button type="button" class="bg-tile" data-bg="neon_city" style="background-image:url('bg_thumb_neon_city.jpg')" aria-label="霓虹城市"><span class="cap">霓虹城市</span></button>
+          <button type="button" class="bg-tile" data-bg="aurora_sea" style="background-image:url('bg_thumb_aurora_sea.jpg')" aria-label="极光海面"><span class="cap">极光海面</span></button>
+          <button type="button" class="bg-tile" data-bg="courtyard_leaves" style="background-image:url('bg_thumb_courtyard_leaves.jpg')" aria-label="荒院落叶"><span class="cap">荒院落叶</span></button>
+          <button type="button" class="bg-tile" data-bg="greek_temple_sunset" style="background-image:url('bg_thumb_greek_temple_sunset.jpg')" aria-label="夕阳神殿"><span class="cap">夕阳神殿</span></button>
+          <button type="button" class="bg-tile" data-bg="greek_amphitheater_moon" style="background-image:url('bg_thumb_greek_amphitheater_moon.jpg')" aria-label="月夜剧场"><span class="cap">月夜剧场</span></button>
+          <button type="button" class="bg-tile" data-bg="greek_colonnade_sea" style="background-image:url('bg_thumb_greek_colonnade_sea.jpg')" aria-label="海边柱廊"><span class="cap">海边柱廊</span></button>
         </div>
       </section>
       <section class="section" id="codesBox">
@@ -332,7 +356,7 @@ canvas#cv{
           <video id="bgPreviewVideo" muted loop playsinline preload="metadata" hidden></video>
           <div class="bg-preview-ph" id="bgPreviewPh">
             <div class="ph-title">随机</div>
-            <div class="ph-sub">客户打开时从 6 个背景里抽</div>
+            <div class="ph-sub">客户打开时从 9 个背景里抽</div>
             <div class="ph-minis" aria-hidden="true">
               <span style="background-image:url('bg_thumb_silk_flow.jpg')"></span>
               <span style="background-image:url('bg_thumb_leaves_flow.jpg')"></span>
@@ -340,6 +364,12 @@ canvas#cv{
               <span style="background-image:url('bg_thumb_diamond_hall.jpg')"></span>
               <span style="background-image:url('bg_thumb_stardust_observatory.jpg')"></span>
               <span style="background-image:url('bg_thumb_petal_greenhouse.jpg')"></span>
+              <span style="background-image:url('bg_thumb_neon_city.jpg')"></span>
+              <span style="background-image:url('bg_thumb_aurora_sea.jpg')"></span>
+              <span style="background-image:url('bg_thumb_courtyard_leaves.jpg')"></span>
+              <span style="background-image:url('bg_thumb_greek_temple_sunset.jpg')"></span>
+              <span style="background-image:url('bg_thumb_greek_amphitheater_moon.jpg')"></span>
+              <span style="background-image:url('bg_thumb_greek_colonnade_sea.jpg')"></span>
             </div>
           </div>
         </div>
@@ -351,7 +381,7 @@ canvas#cv{
     <summary>链接格式与发送说明</summary>
     <p style="margin:10px 0 0">邮件：点「复制邮件卡片」→ 写信窗口 Ctrl+V。若企微邮箱把链接剥掉，改用「下载 PNG」+「复制链接」，插图后选中图片加超链接。<br>
     聊天软件（TG / 微信 / Discord 等）：动图好看但不能跳转，须再发一行兑换链接；或发 PNG + 链接。<br>
-    单码 <code>#n=名字&amp;c=兑换码&amp;a=$金额&amp;l=语言[&amp;t=主题][&amp;f=送卡人][&amp;b=背景]</code>；多码 <code>#n=…&amp;c=CODE1:5,CODE2:10&amp;a=$合计&amp;l=…[&amp;b=…]</code>。<code>b</code> 可选：silk_flow / leaves_flow / feather_temple / diamond_hall / stardust_observatory / petal_greenhouse；省略则随机。兑换码只在链接里。</p>
+    单码 <code>#n=名字&amp;c=兑换码&amp;a=$金额&amp;l=语言[&amp;t=主题][&amp;f=送卡人][&amp;b=背景]</code>；多码 <code>#n=…&amp;c=CODE1:5,CODE2:10&amp;a=$合计&amp;l=…[&amp;b=…]</code>。<code>b</code> 可选：silk_flow / leaves_flow / feather_temple / diamond_hall / stardust_observatory / petal_greenhouse / neon_city / aurora_sea / courtyard_leaves / greek_temple_sunset / greek_amphitheater_moon / greek_colonnade_sea；省略则随机。兑换码只在链接里。</p>
   </details>
 </div>
 <script>
@@ -482,14 +512,17 @@ function makeSparkleSprite(){
   c.fillRect(31,6,2,52);c.fillRect(6,31,52,2);
   return s;
 }
-function renderAnimFrame(out, face, t, spr, dust){
+function renderAnimFrame(out, face, t, spr, dust, opts){
+  opts=opts||{};
   const ctx=out.getContext('2d');
   const W=out.width, H=out.height;
-  // dark radial bg
   const TH=(THEME&&THEME.th)||GiftFace.THEMES.default;
-  const bgG=ctx.createRadialGradient(W*.5,H*.38,20,W*.5,H*.5,W*.75);
-  bgG.addColorStop(0,TH.page[0]);bgG.addColorStop(.45,TH.page[1]);bgG.addColorStop(1,TH.page[2]);
-  ctx.fillStyle=bgG;ctx.fillRect(0,0,W,H);
+  // dark radial bg (skipped when a video frame was already drawn)
+  if(!opts.skipBg){
+    const bgG=ctx.createRadialGradient(W*.5,H*.38,20,W*.5,H*.5,W*.75);
+    bgG.addColorStop(0,TH.page[0]);bgG.addColorStop(.45,TH.page[1]);bgG.addColorStop(1,TH.page[2]);
+    ctx.fillStyle=bgG;ctx.fillRect(0,0,W,H);
+  }
   // sparkles
   ctx.save();ctx.globalCompositeOperation='lighter';
   for(const p of dust){
@@ -566,35 +599,152 @@ function renderAnimFrame(out, face, t, spr, dust){
   ctx.strokeStyle='rgba('+TH.rim+',.35)';ctx.lineWidth=1.5;ctx.stroke();
   ctx.restore();
 }
-function encodeGifFromFace(face){
+function drawVideoCover(ctx, video, W, H){
+  const vw=video.videoWidth||W, vh=video.videoHeight||H;
+  if(!vw||!vh){ctx.fillStyle='#0a0604';ctx.fillRect(0,0,W,H);return}
+  const scale=Math.max(W/vw, H/vh);
+  const dw=vw*scale, dh=vh*scale;
+  ctx.drawImage(video, (W-dw)/2, (H-dh)/2, dw, dh);
+}
+function seekVideo(video, time){
   return new Promise((resolve,reject)=>{
-    if(typeof GIF!=='function'){reject(new Error('gif.js missing'));return}
-    const out=document.createElement('canvas');out.width=GIF_W;out.height=GIF_H;
-    const spr=makeSparkleSprite();
-    const dust=[];
-    for(let i=0;i<16;i++)dust.push({
-      x:Math.random()*GIF_W,y:Math.random()*GIF_H,r:1.5+Math.random()*4,
-      v:.4+Math.random()*1.2,ph:Math.random()*6.28,tw:.6+Math.random()*1.6,dx:(Math.random()-.5)*18
-    });
-    const gif=new GIF({
-      workers:2,quality:15,width:GIF_W,height:GIF_H,workerScript:'gif.worker.js',
-      dither:false,transparent:null
-    });
-    const nFrames=Math.round(GIF_FPS*GIF_SEC);
-    const delay=Math.round(1000/GIF_FPS);
-    for(let i=0;i<nFrames;i++){
-      const t=i/nFrames;
-      renderAnimFrame(out, face, t, spr, dust);
-      gif.addFrame(out,{copy:true,delay:delay});
-      if(i%5===0)$('gifProg').textContent='渲染动图 '+(Math.round((i+1)/nFrames*55))+'%…';
+    let settled=false;
+    const finish=(fn,arg)=>{
+      if(settled)return; settled=true;
+      video.removeEventListener('seeked',onSeeked);
+      video.removeEventListener('error',onErr);
+      clearTimeout(to);
+      fn(arg);
+    };
+    const onSeeked=()=>finish(resolve);
+    const onErr=()=>finish(reject,new Error('seek failed'));
+    const to=setTimeout(()=>finish(reject,new Error('seek timeout')),2500);
+    video.addEventListener('seeked',onSeeked);
+    video.addEventListener('error',onErr);
+    try{
+      const d=video.duration;
+      let t=time;
+      if(isFinite(d)&&d>0){
+        t=((t%d)+d)%d;
+        if(t>=d-1e-3) t=Math.max(0,d-0.05);
+      }
+      if(Math.abs((video.currentTime||0)-t)<0.02){finish(resolve);return}
+      video.currentTime=t;
+    }catch(e){finish(reject,e)}
+  });
+}
+function pickGifBgKey(){
+  const key=((($('bg')&&$('bg').value)||'').trim());
+  if(key && typeof BG_SRC==='object' && BG_SRC[key]) return key;
+  const vid=$('bgPreviewVideo');
+  if(vid){
+    const dk=(vid.dataset.key||'').trim();
+    if(dk && BG_SRC[dk]) return dk;
+    const src=(vid.currentSrc||vid.src||'').trim();
+    if(src && typeof BG_SRC==='object'){
+      for(const k of Object.keys(BG_SRC)){
+        if(src.indexOf(BG_SRC[k].split('?')[0])!==-1) return k;
+      }
     }
-    gif.on('progress',p=>{$('gifProg').textContent='编码动图 '+Math.round(55+p*45)+'%…'});
-    gif.on('finished',blob=>{resolve(blob)});
+  }
+  const keys=(typeof BG_SRC==='object')?Object.keys(BG_SRC):[];
+  if(!keys.length) return '';
+  return keys[Math.floor(Math.random()*keys.length)];
+}
+function loadGifBgVideo(key){
+  return new Promise((resolve,reject)=>{
+    if(!key || !BG_SRC[key]){resolve(null);return}
+    const v=document.createElement('video');
+    v.muted=true; v.playsInline=true; v.preload='auto';
+    let settled=false;
+    const finish=(fn,arg)=>{
+      if(settled)return; settled=true;
+      v.removeEventListener('loadeddata',onReady);
+      v.removeEventListener('loadedmetadata',onReady);
+      v.removeEventListener('error',onErr);
+      clearTimeout(to);
+      fn(arg);
+    };
+    const onReady=()=>{ if(v.videoWidth) finish(resolve,v); };
+    const onErr=()=>finish(reject,new Error('bg load failed'));
+    const to=setTimeout(()=>finish(reject,new Error('bg load timeout')),15000);
+    v.addEventListener('loadeddata',onReady);
+    v.addEventListener('loadedmetadata',onReady);
+    v.src=BG_SRC[key];
+    try{v.load()}catch(e){}
+  });
+}
+async function encodeGifFromFace(face){
+  if(typeof GIF!=='function') throw new Error('gif.js missing');
+  const out=document.createElement('canvas');out.width=GIF_W;out.height=GIF_H;
+  const spr=makeSparkleSprite();
+  const dust=[];
+  for(let i=0;i<16;i++)dust.push({
+    x:Math.random()*GIF_W,y:Math.random()*GIF_H,r:1.5+Math.random()*4,
+    v:.4+Math.random()*1.2,ph:Math.random()*6.28,tw:.6+Math.random()*1.6,dx:(Math.random()-.5)*18
+  });
+  const gif=new GIF({
+    workers:2,quality:15,width:GIF_W,height:GIF_H,workerScript:'gif.worker.js',
+    dither:false,transparent:null
+  });
+  const nFrames=Math.round(GIF_FPS*GIF_SEC);
+  const delay=Math.round(1000/GIF_FPS);
+
+  const bgKey=pickGifBgKey();
+  let bgVideo=null;
+  let useVideo=false;
+  if(bgKey){
+    try{
+      if($('gifProg')) $('gifProg').textContent='加载背景视频…';
+      bgVideo=await loadGifBgVideo(bgKey);
+      if(bgVideo && bgVideo.videoWidth) useVideo=true;
+    }catch(e){
+      console.warn('gif bg load failed, solid fallback', e);
+      useVideo=false; bgVideo=null;
+    }
+  }
+
+  for(let i=0;i<nFrames;i++){
+    const t=i/nFrames;
+    let drewVideo=false;
+    if(useVideo && bgVideo){
+      try{
+        const dur=(isFinite(bgVideo.duration)&&bgVideo.duration>0)?bgVideo.duration:GIF_SEC;
+        const windowSec=Math.min(GIF_SEC, dur);
+        await seekVideo(bgVideo, t*windowSec);
+        const ctx=out.getContext('2d');
+        drawVideoCover(ctx, bgVideo, GIF_W, GIF_H);
+        // light dark veil so the card still pops
+        ctx.fillStyle='rgba(6,3,2,.32)';
+        ctx.fillRect(0,0,GIF_W,GIF_H);
+        drewVideo=true;
+      }catch(e){
+        console.warn('gif bg seek failed, solid fallback', e);
+        useVideo=false;
+      }
+    }
+    renderAnimFrame(out, face, t, spr, dust, drewVideo?{skipBg:true}:undefined);
+    gif.addFrame(out,{copy:true,delay:delay});
+    if(i%3===0 && $('gifProg')){
+      const pct=Math.round((i+1)/nFrames*55);
+      $('gifProg').textContent=(useVideo?'渲染动图（含背景） ':'渲染动图 ')+pct+'%…';
+    }
+  }
+
+  const usedKey=useVideo?bgKey:'';
+  const blob=await new Promise((resolve,reject)=>{
+    gif.on('progress',p=>{
+      if($('gifProg')) $('gifProg').textContent='编码动图 '+Math.round(55+p*45)+'%…';
+    });
+    gif.on('finished',b=>resolve(b));
     gif.on('abort',()=>reject(new Error('aborted')));
     try{gif.render()}catch(e){reject(e)}
   });
+  try{ if(bgVideo){ bgVideo.removeAttribute('src'); bgVideo.load(); } }catch(e){}
+  return {blob, bgKey:usedKey};
 }
 window.makeSparkleSprite=makeSparkleSprite;window.renderAnimFrame=renderAnimFrame;window.encodeGifFromFace=encodeGifFromFace;
+window.drawVideoCover=drawVideoCover;window.pickGifBgKey=pickGifBgKey;
 $('gif').onclick=async()=>{
   if(!ready)return;
   refresh();draw();
@@ -605,14 +755,14 @@ $('gif').onclick=async()=>{
     // snapshot face at 1x logical for cleaner GIF (use half of hi-dpi canvas)
     const face=document.createElement('canvas');face.width=1149;face.height=672;
     face.getContext('2d').drawImage(cv,0,0,1149,672);
-    const blob=await encodeGifFromFace(face);
+    const {blob, bgKey}=await encodeGifFromFace(face);
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download='ToAPIs_GiftCard_'+$('lang').value+(themeKey!=='default'?'_'+themeKey:'')+'.gif';
+    a.download='ToAPIs_GiftCard_'+$('lang').value+(themeKey!=='default'?'_'+themeKey:'')+(bgKey?'_'+bgKey:'')+'.gif';
     a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),4000);
     const mb=(blob.size/1048576).toFixed(2);
-    $('gifProg').textContent='已下载动图（'+mb+' MB）。聊天里记得再发一行兑换链接。';
+    $('gifProg').textContent='已下载动图'+(bgKey?'（背景 '+bgKey+'）':'')+'（'+mb+' MB）。聊天里记得再发一行兑换链接。';
     btn.textContent='已下载';
   }catch(e){
     console.error(e);
@@ -654,7 +804,13 @@ const BG_SRC={
   feather_temple:'feather_temple.mp4?v=1',
   diamond_hall:'diamond_hall.mp4?v=1',
   stardust_observatory:'stardust_observatory.mp4?v=1',
-  petal_greenhouse:'petal_greenhouse.mp4?v=2'
+  petal_greenhouse:'petal_greenhouse.mp4?v=2',
+  neon_city:'neon_city.mp4?v=1',
+  aurora_sea:'aurora_sea.mp4?v=1',
+  courtyard_leaves:'courtyard_leaves.mp4?v=1',
+  greek_temple_sunset:'greek_temple_sunset.mp4?v=1',
+  greek_amphitheater_moon:'greek_amphitheater_moon.mp4?v=1',
+  greek_colonnade_sea:'greek_colonnade_sea.mp4?v=1'
 };
 function updateBgPreview(){
   const key=((($('bg')&&$('bg').value)||'').trim());
