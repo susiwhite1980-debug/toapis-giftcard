@@ -131,11 +131,6 @@ function draw(x,o){
   x.globalAlpha=.12;x.fillStyle='#4a2a14';
   for(let i=0;i<90;i++){const sx=bx+8+(Math.sin(i*12.9)*0.5+0.5)*(bw-16),sy=by+8+(Math.cos(i*7.3)*0.5+0.5)*(bh-16);x.fillRect(sx,sy,1.6,1.6)}
   x.restore();
-  // optional count badge (not a redeem code)
-  const n=o.codeCount|0; if(n>1){
-   x.globalAlpha=.9;x.font=F('700 26px GI');x.fillStyle=th.codeInk;
-   const label='× '+n;x.fillText(label,575,462);
-  }
   x.globalAlpha=1;
  }else{
   x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
