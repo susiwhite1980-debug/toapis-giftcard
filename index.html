@@ -97,10 +97,10 @@ const THEME_KEY=GiftFace.pickTheme(params.get('t')||params.get('theme'));const T
  document.head.appendChild(st);document.querySelector('meta[name=theme-color]').content=p[2];})();
 
 (function silkBg(){
- /* looping video behind the card: satin silk or falling leaves, picked at random (50/50) per page load */
+ /* looping video behind the card: silk / leaves / feather temple / diamond hall / stardust observatory / petal greenhouse, equal random per page load */
  const v=document.getElementById('silk'); if(!v) return;
- const BGS=['silk_flow.mp4?v=2','leaves_flow.mp4?v=1'];
- const src=BGS[Math.random()<.5?0:1];
+ const BGS=['silk_flow.mp4?v=2','leaves_flow.mp4?v=1','feather_temple.mp4?v=1','diamond_hall.mp4?v=1','stardust_observatory.mp4?v=1','petal_greenhouse.mp4?v=1'];
+ const src=BGS[Math.floor(Math.random()*BGS.length)];
  v.dataset.bg=src.split('_')[0];
  if(!v.getAttribute('src')){v.src=src;v.load()}
  v.playbackRate=.72;const play=()=>v.play().catch(()=>{});
