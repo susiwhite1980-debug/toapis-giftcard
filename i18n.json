@@ -38,7 +38,15 @@
    "native": "English",
    "english": "English",
    "htmlLang": "en",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Claimed",
+   "multiHint": "Tap each card to redeem one code at a time. Claimed cards shrink aside — {left} left.",
+   "doneTitle": "All codes claimed",
+   "doneHint": "You’ve opened every card in this gift. Check ToAPIs billing if a redeem is still pending.",
+   "cardProgress": "{cur} of {total}",
+   "codesCount": "{n} codes",
+   "addCode": "Add code",
+   "multiTap": "Tap to copy this code and redeem"
   },
   "zh-CN": {
    "title": "ToAPIs 礼品卡",
@@ -61,7 +69,15 @@
    "native": "简体中文",
    "english": "Simplified Chinese",
    "htmlLang": "zh-CN",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "已领取",
+   "multiHint": "点一张兑一张。已领的会缩到一边——还剩 {left} 张。",
+   "doneTitle": "全部已领取",
+   "doneHint": "这组兑换码都已点开。若尚未到账，请到 ToAPIs 账单页确认。",
+   "cardProgress": "{cur} / {total}",
+   "codesCount": "{n} 个兑换码",
+   "addCode": "添加兑换码",
+   "multiTap": "点击复制此码并前往兑换"
   },
   "zh-TW": {
    "title": "ToAPIs 禮品卡",
@@ -84,7 +100,15 @@
    "native": "繁體中文",
    "english": "Traditional Chinese",
    "htmlLang": "zh-TW",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "已領取",
+   "multiHint": "點一張兌一張。已領的會縮到一邊——還剩 {left} 張。",
+   "doneTitle": "全部已領取",
+   "doneHint": "這組兌換碼都已點開。若尚未到帳，請到 ToAPIs 帳單頁確認。",
+   "cardProgress": "{cur} / {total}",
+   "codesCount": "{n} 個兌換碼",
+   "addCode": "新增兌換碼",
+   "multiTap": "點擊複製此碼並前往兌換"
   },
   "es": {
    "title": "Tarjeta regalo de ToAPIs",
@@ -107,7 +131,15 @@
    "native": "Español",
    "english": "Spanish",
    "htmlLang": "es",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Canjeada",
+   "multiHint": "Toca cada tarjeta para canjear un código. Las canjeadas se apartan — quedan {left}.",
+   "doneTitle": "Todos los códigos canjeados",
+   "doneHint": "Has abierto todas las tarjetas. Revisa la facturación de ToAPIs si falta algún canje.",
+   "cardProgress": "{cur} de {total}",
+   "codesCount": "{n} códigos",
+   "addCode": "Añadir código",
+   "multiTap": "Toca para copiar este código y canjear"
   },
   "pt-BR": {
    "title": "Cartão-presente ToAPIs",
@@ -130,7 +162,15 @@
    "native": "Português (Brasil)",
    "english": "Portuguese (Brazil)",
    "htmlLang": "pt-BR",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Resgatado",
+   "multiHint": "Toque em cada cartão para resgatar um código. Os resgatados vão para o lado — restam {left}.",
+   "doneTitle": "Todos os códigos resgatados",
+   "doneHint": "Você abriu todos os cartões. Confira a cobrança do ToAPIs se algum resgate ainda estiver pendente.",
+   "cardProgress": "{cur} de {total}",
+   "codesCount": "{n} códigos",
+   "addCode": "Adicionar código",
+   "multiTap": "Toque para copiar este código e resgatar"
   },
   "fr": {
    "title": "Carte cadeau ToAPIs",
@@ -153,7 +193,15 @@
    "native": "Français",
    "english": "French",
    "htmlLang": "fr",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Utilisé",
+   "multiHint": "Touchez chaque carte pour utiliser un code. Les cartes utilisées se rangent sur le côté — il en reste {left}.",
+   "doneTitle": "Tous les codes utilisés",
+   "doneHint": "Vous avez ouvert toutes les cartes. Vérifiez la facturation ToAPIs si un échange est encore en attente.",
+   "cardProgress": "{cur} sur {total}",
+   "codesCount": "{n} codes",
+   "addCode": "Ajouter un code",
+   "multiTap": "Touchez pour copier ce code et l’utiliser"
   },
   "de": {
    "title": "ToAPIs-Geschenkkarte",
@@ -176,7 +224,15 @@
    "native": "Deutsch",
    "english": "German",
    "htmlLang": "de",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Eingelöst",
+   "multiHint": "Tippen Sie jede Karte an, um einen Code einzulösen. Eingelöste rutschen zur Seite — noch {left} übrig.",
+   "doneTitle": "Alle Codes eingelöst",
+   "doneHint": "Sie haben jede Karte geöffnet. Prüfen Sie die ToAPIs-Abrechnung, falls eine Einlösung noch aussteht.",
+   "cardProgress": "{cur} von {total}",
+   "codesCount": "{n} Codes",
+   "addCode": "Code hinzufügen",
+   "multiTap": "Tippen, um diesen Code zu kopieren und einzulösen"
   },
   "ja": {
    "title": "ToAPIs ギフトカード",
@@ -199,7 +255,15 @@
    "native": "日本語",
    "english": "Japanese",
    "htmlLang": "ja",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "受取済",
+   "multiHint": "カードを1枚ずつタップして引き換え。受取済みは横に縮小——残り {left} 枚。",
+   "doneTitle": "すべて受取済み",
+   "doneHint": "このギフトのコードはすべて開きました。未反映の場合は ToAPIs の請求ページを確認してください。",
+   "cardProgress": "{cur} / {total}",
+   "codesCount": "{n} コード",
+   "addCode": "コードを追加",
+   "multiTap": "タップしてこのコードをコピーし引き換える"
   },
   "ko": {
    "title": "ToAPIs 기프트 카드",
@@ -222,7 +286,15 @@
    "native": "한국어",
    "english": "Korean",
    "htmlLang": "ko",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "수령함",
+   "multiHint": "카드를 하나씩 탭해 교환하세요. 수령한 카드는 옆으로 줄어듭니다 — {left}장 남음.",
+   "doneTitle": "모두 수령함",
+   "doneHint": "이 선물의 코드를 모두 열었습니다. 반영이 안 되면 ToAPIs 결제 페이지를 확인하세요.",
+   "cardProgress": "{cur} / {total}",
+   "codesCount": "{n}개 코드",
+   "addCode": "코드 추가",
+   "multiTap": "탭하여 이 코드를 복사하고 교환"
   },
   "ar": {
    "title": "بطاقة هدايا ToAPIs",
@@ -245,7 +317,15 @@
    "native": "العربية",
    "english": "Arabic",
    "htmlLang": "ar",
-   "dir": "rtl"
+   "dir": "rtl",
+   "claimed": "تم الاستلام",
+   "multiHint": "انقر كل بطاقة لاسترداد رمز واحد. البطاقات المستلمة تنكمش جانبًا — متبقّى {left}.",
+   "doneTitle": "تم استلام كل الرموز",
+   "doneHint": "فتحت كل البطاقات في هذه الهدية. راجع فوترة ToAPIs إن كان الاسترداد معلّقًا.",
+   "cardProgress": "{cur} من {total}",
+   "codesCount": "{n} رموز",
+   "addCode": "إضافة رمز",
+   "multiTap": "انقر لنسخ هذا الرمز والاسترداد"
   },
   "ru": {
    "title": "Подарочная карта ToAPIs",
@@ -268,7 +348,15 @@
    "native": "Русский",
    "english": "Russian",
    "htmlLang": "ru",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Получено",
+   "multiHint": "Нажимайте каждую карту, чтобы активировать один код. Полученные уезжают в сторону — осталось {left}.",
+   "doneTitle": "Все коды получены",
+   "doneHint": "Вы открыли все карты. Проверьте биллинг ToAPIs, если активация ещё не прошла.",
+   "cardProgress": "{cur} из {total}",
+   "codesCount": "{n} кода(ов)",
+   "addCode": "Добавить код",
+   "multiTap": "Нажмите, чтобы скопировать этот код и активировать"
   },
   "uk": {
    "title": "Подарункова картка ToAPIs",
@@ -291,7 +379,15 @@
    "native": "Українська",
    "english": "Ukrainian",
    "htmlLang": "uk",
-   "dir": "ltr"
+   "dir": "ltr",
+   "claimed": "Отримано",
+   "multiHint": "Натискайте кожну картку, щоб активувати один код. Отримані від’їжджають убік — лишилось {left}.",
+   "doneTitle": "Усі коди отримано",
+   "doneHint": "Ви відкрили всі картки. Перевірте білінг ToAPIs, якщо активація ще не пройшла.",
+   "cardProgress": "{cur} з {total}",
+   "codesCount": "{n} код(ів)",
+   "addCode": "Додати код",
+   "multiTap": "Натисніть, щоб скопіювати цей код і активувати"
   }
  },
  "themeParam": "t",

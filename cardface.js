@@ -111,9 +111,37 @@ function draw(x,o){
  x.save();x.shadowColor=th.boxSh;x.shadowBlur=18;x.shadowOffsetY=6;rr(x,53,415,1044,92,18);
  const gr=x.createLinearGradient(0,415,0,507);gr.addColorStop(0,th.box[0]);gr.addColorStop(1,th.box[1]);x.fillStyle=gr;x.fill();x.restore();
  if(th.boxLine){x.save();rr(x,57.5,419.5,1035,83,15);x.strokeStyle=th.boxLine;x.lineWidth=1;x.stroke();x.restore();}
- x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
- x.textAlign='center';x.textBaseline='middle';
- x.save();x.fillStyle=th.codeHi;x.fillText(o.code||'••••',575,462.5);x.fillStyle=th.codeInk;x.fillText(o.code||'••••',575,462);x.restore();
+ // code strip: normal readable code, or frosted blur when o.blurCode / multi-code shared face
+ x.save();x.textAlign='center';x.textBaseline='middle';
+ if(o.blurCode || (o.codeCount|0)>1){
+  /* frosted / obscured strip — keep white box, hide actual codes */
+  const bx=53,by=415,bw=1044,bh=92;
+  x.save();rr(x,bx+4,by+4,bw-8,bh-8,14);x.clip();
+  // soft fake glyphs
+  x.globalAlpha=.55;x.fillStyle=th.codeInk;
+  const glyphs=['A7','K2','M9','Q4','X1','P8','R3','W5'];
+  x.font='700 28px GJ';
+  for(let i=0;i<8;i++){const gx=90+i*120+((i%3)-1)*6,gy=458+((i%2)?3:-2);x.filter='blur(7px)';x.fillText(glyphs[i],gx,gy)}
+  try{x.filter='none'}catch(e){}
+  // frost veil
+  x.globalAlpha=1;const fr=x.createLinearGradient(0,by,0,by+bh);
+  fr.addColorStop(0,'rgba(255,255,255,.55)');fr.addColorStop(.5,'rgba(255,250,245,.72)');fr.addColorStop(1,'rgba(250,243,237,.6)');
+  x.fillStyle=fr;x.fillRect(bx,by,bw,bh);
+  // noise speckles
+  x.globalAlpha=.12;x.fillStyle='#4a2a14';
+  for(let i=0;i<90;i++){const sx=bx+8+(Math.sin(i*12.9)*0.5+0.5)*(bw-16),sy=by+8+(Math.cos(i*7.3)*0.5+0.5)*(bh-16);x.fillRect(sx,sy,1.6,1.6)}
+  x.restore();
+  // optional count badge (not a redeem code)
+  const n=o.codeCount|0; if(n>1){
+   x.globalAlpha=.9;x.font=F('700 26px GI');x.fillStyle=th.codeInk;
+   const label='× '+n;x.fillText(label,575,462);
+  }
+  x.globalAlpha=1;
+ }else{
+  x.font='520 27px GJ';try{x.letterSpacing='2.7px'}catch(e){}
+  x.fillStyle=th.codeHi;x.fillText(o.code||'••••',575,462.5);x.fillStyle=th.codeInk;x.fillText(o.code||'••••',575,462);
+ }
+ x.restore();
  x.textAlign='left';x.textBaseline='alphabetic';
  // bottom row: tip (auto-shrinks) + bold white toapis.com bottom-right
  const tip=T.cardTap,url='toapis.com',urlFont=F('700 18px GI');
