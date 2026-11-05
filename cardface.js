@@ -2,7 +2,7 @@
  * Card logical size 1149x672, corner radius 40 (matches CSS .face border-radius 3.5%/6%).
  * Rounding is done ONCE here with an anti-aliased canvas clip; backgrounds are fully opaque
  * (no alpha holes), so exported PNGs have clean transparent corners and no black notches.
- * Themes: default | halloween | christmas | halloween2 | christmas2 | gold | diamond | neon | aurora | earth | jupiter | saturn | venus  (URL param `t`, see README).
+ * Themes: default | halloween | christmas | halloween2 | christmas2 | gold | diamond | neon | aurora | earth | jupiter | saturn | venus | platinum_black | easter | rosegold  (URL param `t`, see README).
  */
 (function(g){
 const W=1149,H=672,R=40;
@@ -58,9 +58,21 @@ const THEMES={
  venus:{label:'金星',bg:'bg_venus.jpg?v=1',logo:true,base:'#1a0e14',
   ink:'#fff4ea',shBig:'rgba(0,0,0,.42)',sh:'rgba(0,0,0,.52)',hi:'rgba(255,220,180,.22)',
   box:['#ffffff','#faf3ed'],boxSh:'rgba(40,20,15,.16)',boxLine:null,codeInk:'#3a2418',codeHi:'rgba(255,255,255,.8)',
-  glow:'230,160,90',page:['#241018','#12080c','#080406'],accent:'#e8a85a',accentSoft:'#f5d0a8',rim:'255,210,170'}
+  glow:'230,160,90',page:['#241018','#12080c','#080406'],accent:'#e8a85a',accentSoft:'#f5d0a8',rim:'255,210,170'},
+ platinum_black:{label:'黑色铂金卡',bg:'bg_platinum_black.jpg?v=2',logo:true,base:'#0a0a0c',
+  ink:'#f4f6f8',shBig:'rgba(0,0,0,.5)',sh:'rgba(0,0,0,.6)',hi:'rgba(230,235,245,.22)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(40,20,30,.18)',boxLine:null,codeInk:'#1c2028',codeHi:'rgba(255,255,255,.8)',
+  glow:'200,205,215',page:['#18191c','#0b0b0d','#030304'],accent:'#c8ccd4',accentSoft:'#eef1f5',rim:'225,228,235'},
+ easter:{label:'复活节卡',bg:'bg_easter.jpg?v=1',logo:true,base:'#f3e6f0',
+  ink:'#4a2d5c',shBig:'rgba(255,255,255,.55)',sh:'rgba(255,255,255,.6)',hi:'rgba(255,255,255,.4)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(40,20,30,.18)',boxLine:null,codeInk:'#4a2d5c',codeHi:'rgba(255,255,255,.8)',
+  glow:'230,170,220',page:['#f6e9f2','#e9ddf0','#d9d0ea'],accent:'#b46fc8',accentSoft:'#f2a7c3',rim:'240,200,235'},
+ rosegold:{label:'尊贵玫瑰金卡',bg:'bg_rosegold.jpg?v=1',logo:true,base:'#3a1c20',
+  ink:'#fff4f0',shBig:'rgba(50,15,20,.45)',sh:'rgba(50,15,20,.55)',hi:'rgba(255,220,210,.25)',
+  box:['#ffffff','#faf3ed'],boxSh:'rgba(40,20,30,.18)',boxLine:null,codeInk:'#5a2a2e',codeHi:'rgba(255,255,255,.8)',
+  glow:'232,160,150',page:['#3a1c22','#1e0e12','#0a0406'],accent:'#e0a090',accentSoft:'#f6d0c4',rim:'245,205,195'}
 };
-const THEME_ORDER=['default','halloween','christmas','halloween2','christmas2','gold','diamond','neon','aurora','earth','jupiter','saturn','venus'];
+const THEME_ORDER=['default','halloween','christmas','halloween2','christmas2','gold','diamond','neon','aurora','earth','jupiter','saturn','venus','platinum_black','easter','rosegold'];
 function pickTheme(v){v=(v||'').trim().toLowerCase();if(v==='xmas')v='christmas';if(v==='hw')v='halloween';if(v==='diamonds')v='diamond';if(v==='hw2')v='halloween2';if(v==='xmas2')v='christmas2';if(v==='cyber'||v==='neoncyber')v='neon';if(v==='aurora_sea'||v==='aurorasea')v='aurora';return THEMES[v]?v:'default'}
 const CJK_FB=',"Noto Sans CJK SC","Noto Sans SC","PingFang SC","Hiragino Sans","Microsoft YaHei","Malgun Gothic","Apple SD Gothic Neo","Noto Sans Arabic","Segoe UI",Tahoma,sans-serif';
 const F=f=>f+CJK_FB;
