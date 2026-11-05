@@ -125,6 +125,50 @@ canvas#cv{
 }
 #gifProg{font-size:12px;color:var(--accent-soft);min-height:1.2em;margin:10px 0 0}
 .actions-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.bg-preview{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.bg-preview h3{margin:0 0 10px;font:650 12px/1 GI,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-soft)}
+.bg-preview-frame{
+  position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line2);background:rgba(0,0,0,.35);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)
+}
+.bg-preview-frame video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block
+}
+.bg-preview-ph[hidden],#bgPreviewVideo[hidden]{display:none!important}
+.bg-preview-ph{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:16px;text-align:center;color:var(--muted);
+  background:
+    radial-gradient(80% 70% at 50% 40%,rgba(242,106,27,.16),transparent 60%),
+    repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 8px,transparent 8px 16px)
+}
+.bg-preview-ph .ph-title{font:650 14px GI,sans-serif;color:var(--accent-soft)}
+.bg-preview-ph .ph-sub{font-size:12px;line-height:1.5;color:var(--soft);max-width:280px}
+.bg-preview-ph .ph-minis{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+.bg-preview-ph .ph-minis span{
+  width:44px;height:28px;border-radius:6px;background:#2a160c center/cover no-repeat;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)
+}
+
+.bgpreview{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.bgpreview-head{margin:0 0 10px;font:650 12px/1 GI,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-soft)}
+.bgpreview-stage{
+  position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;
+  background:#0d0703;border:1px solid var(--line);box-shadow:var(--shadow)
+}
+.bgpreview-stage>video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0d0703
+}
+.bgpreview-empty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:16px;font-size:12.5px;line-height:1.6;color:var(--muted);
+  background:
+    linear-gradient(135deg,rgba(242,106,27,.14),rgba(0,0,0,.34)),
+    repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 6px,transparent 6px 12px),
+    #1c1008
+}
+.bgpreview-stage [hidden]{display:none!important}
 .tip{
   margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);
   background:rgba(0,0,0,.2);font-size:12px;color:var(--soft);line-height:1.65
@@ -282,6 +326,24 @@ canvas#cv{
         <button type="button" id="dl" class="ghost">下载 PNG</button>
         <button type="button" id="gif" class="ghost">下载动图</button>
       </div>
+      <div class="bg-preview" id="bgPreviewBox">
+        <h3>客户页背景预览</h3>
+        <div class="bg-preview-frame" id="bgPreviewFrame">
+          <video id="bgPreviewVideo" muted loop playsinline preload="metadata" hidden></video>
+          <div class="bg-preview-ph" id="bgPreviewPh">
+            <div class="ph-title">随机</div>
+            <div class="ph-sub">客户打开时从 6 个背景里抽</div>
+            <div class="ph-minis" aria-hidden="true">
+              <span style="background-image:url('bg_thumb_silk_flow.jpg')"></span>
+              <span style="background-image:url('bg_thumb_leaves_flow.jpg')"></span>
+              <span style="background-image:url('bg_thumb_feather_temple.jpg')"></span>
+              <span style="background-image:url('bg_thumb_diamond_hall.jpg')"></span>
+              <span style="background-image:url('bg_thumb_stardust_observatory.jpg')"></span>
+              <span style="background-image:url('bg_thumb_petal_greenhouse.jpg')"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -364,7 +426,7 @@ function setTheme(){
  const k=GiftFace.pickTheme($('theme').value);themeKey=k;
  return GiftFace.loadTheme(k).then(t=>{if(themeKey===k){THEME=t;refresh()}});
 }
-function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw()}
+function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw();if(typeof updateBgPreview==='function')updateBgPreview()}
 function canvasPngBlob(){return new Promise(r=>cv.toBlob(r,'image/png'))}
 function blobToDataUrl(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob)})}
 ['name','from','lang'].forEach(i=>$(i).addEventListener('input',refresh));$('lang').addEventListener('change',()=>{GiftFace.loadFonts(TT()).then(refresh)});$('theme').addEventListener('change',setTheme);
@@ -585,7 +647,34 @@ $('gif').onclick=async()=>{
 })();
 
 
-/* customer-page background picker → hidden #bg */
+/* customer-page background picker → hidden #bg + live video preview */
+const BG_SRC={
+  silk_flow:'silk_flow.mp4?v=2',
+  leaves_flow:'leaves_flow.mp4?v=1',
+  feather_temple:'feather_temple.mp4?v=1',
+  diamond_hall:'diamond_hall.mp4?v=1',
+  stardust_observatory:'stardust_observatory.mp4?v=1',
+  petal_greenhouse:'petal_greenhouse.mp4?v=2'
+};
+function updateBgPreview(){
+  const key=((($('bg')&&$('bg').value)||'').trim());
+  const vid=$('bgPreviewVideo'), ph=$('bgPreviewPh');
+  if(!vid||!ph) return;
+  if(!key || !BG_SRC[key]){
+    try{vid.pause()}catch(e){}
+    vid.removeAttribute('src'); vid.load(); vid.hidden=true; ph.hidden=false;
+    return;
+  }
+  const src=BG_SRC[key];
+  ph.hidden=true; vid.hidden=false;
+  if(vid.dataset.key!==key){
+    vid.dataset.key=key;
+    vid.src=src; vid.load();
+  }
+  vid.playbackRate=.72;
+  const play=()=>vid.play().catch(()=>{});
+  if(vid.readyState>=2) play(); else vid.addEventListener('canplay',play,{once:true});
+}
 (function(){
   const grid=document.getElementById('bgGrid');
   if(!grid || !$('bg')) return;
@@ -596,6 +685,7 @@ $('gif').onclick=async()=>{
       t.classList.toggle('active', on);
       t.setAttribute('aria-pressed', on?'true':'false');
     });
+    updateBgPreview();
   }
   grid.addEventListener('click',e=>{
     const tile=e.target.closest('.bg-tile'); if(!tile) return;
