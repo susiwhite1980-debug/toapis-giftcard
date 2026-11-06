@@ -320,11 +320,14 @@ canvas#cv{
       </section>
       <section class="section" id="codesBox">
         <h2>兑换码</h2>
-        <p class="hint">每行一个码 + 金额。多码时卡面显示合计、码框模糊；发出去仍是一张卡 + 一条链接，客户页按张领取。</p>
+        <p class="hint">每行一个码 + 金额。可从表格一次性粘贴：多行码、或「码 + 金额」两列（Excel/Sheets 直接 Ctrl+V）。多码时卡面显示合计、码框模糊；发出去仍是一张卡 + 一条链接，客户页按张领取。</p>
         <div class="code-rows" id="codeRows"></div>
         <div class="codes-foot">
           <span class="sum">合计 <b id="sumAmt">$0</b> · <span id="codeCount">0</span> 个码</span>
-          <button type="button" id="addCode" class="ghost">＋ 添加兑换码</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" id="pasteCodes" class="ghost">📋 粘贴表格</button>
+            <button type="button" id="addCode" class="ghost">＋ 添加兑换码</button>
+          </div>
         </div>
       </section>
 
@@ -423,14 +426,82 @@ function syncSum(){
   $('codeCount').textContent=String(items.length);
   return items;
 }
+function parsePasteItems(raw){
+  const text=String(raw||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+  if(!text) return [];
+  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const items=[];
+  for(const line of lines){
+    // Excel/Sheets: code\tamount  |  code,amount  |  code:amount  |  bare code
+    let code='', amount='5';
+    if(line.includes('\t')){
+      const parts=line.split('\t').map(s=>s.trim()).filter(Boolean);
+      code=parts[0]||'';
+      if(parts.length>=2 && /[\d.]/.test(parts[1])) amount=parts[1];
+      else if(parts.length>=2 && !/[\d.$]/.test(parts[1])) {/* second col not amount */}
+    }else if(/[,，;；|]\s*/.test(line) && /[,，;；|].*[\d.]/.test(line)){
+      const parts=line.split(/[,，;；|]/).map(s=>s.trim()).filter(Boolean);
+      code=parts[0]||'';
+      if(parts.length>=2 && /[\d.]/.test(parts[parts.length-1])) amount=parts[parts.length-1];
+    }else if(/:\s*\$?\d/.test(line)){
+      const m=line.match(/^(.*?)\s*:\s*(\$?[\d.]+)\s*$/);
+      if(m){code=m[1].trim();amount=m[2]} else code=line;
+    }else{
+      code=line;
+    }
+    code=code.replace(/^["']|["']$/g,'').trim();
+    if(!code) continue;
+    // skip spreadsheet header rows
+    if(/^(code|codes?|兑换码|兑换代碼|redeem|amount|金额|金額)$/i.test(code)) continue;
+    const n=parseAmt(amount);items.push({code,amount:n||5});
+  }
+  // de-dupe consecutive identical codes keep first amount
+  const seen=new Set();const out=[];
+  for(const it of items){const k=it.code.toLowerCase();if(seen.has(k))continue;seen.add(k);out.push(it)}
+  return out;
+}
+function applyPasteItems(items, startRow){
+  if(!items.length) return false;
+  const rows=[...document.querySelectorAll('#codeRows .code-row')];
+  let idx=startRow?rows.indexOf(startRow):-1;
+  if(idx<0) idx=rows.length?rows.length-1:0;
+  // If start row empty, fill from there; else append after
+  const startEmpty=startRow && !(startRow.querySelector('.code').value||'').trim();
+  let writeAt=startEmpty?idx:idx+1;
+  for(let i=0;i<items.length;i++){
+    const it=items[i];
+    const existing=[...document.querySelectorAll('#codeRows .code-row')];
+    if(writeAt+i < existing.length){
+      const r=existing[writeAt+i];
+      r.querySelector('.code').value=it.code;
+      r.querySelector('.amt').value=String(it.amount).replace(/^\$/,'');
+    }else{
+      addRow(it.code, String(it.amount));
+    }
+  }
+  // clear trailing empties beyond what we wrote? keep at least one if all empty — no need
+  refresh();
+  return true;
+}
 function addRow(code='',amount='5'){
   const row=document.createElement('div');row.className='code-row';
-  row.innerHTML='<input class="code" placeholder="粘贴兑换码" spellcheck="false"><input class="amt" inputmode="decimal" placeholder="金额"><button type="button" class="rm" title="删除">−</button>';
+  row.innerHTML='<input class="code" placeholder="粘贴兑换码（可一次多行）" spellcheck="false"><input class="amt" inputmode="decimal" placeholder="金额"><button type="button" class="rm" title="删除">−</button>';
   row.querySelector('.code').value=code;
   row.querySelector('.amt').value=String(amount).replace(/^\$/,'');
   row.querySelector('.rm').onclick=()=>{const n=document.querySelectorAll('#codeRows .code-row').length;if(n<=1){row.querySelector('.code').value='';row.querySelector('.amt').value='5';refresh();return}row.remove();refresh()};
   row.querySelector('.code').addEventListener('input',refresh);
   row.querySelector('.amt').addEventListener('input',refresh);
+  row.querySelector('.code').addEventListener('paste',(e)=>{
+    const raw=(e.clipboardData||window.clipboardData).getData('text');
+    if(!raw) return;
+    // multi-line or tabbed table → bulk fill
+    if(!/[\n\r\t]/.test(raw) && !/[,，;；|].*[\d.]/.test(raw)) return;
+    const items=parsePasteItems(raw);
+    if(items.length<=1 && !/[\n\r\t]/.test(raw)) return;
+    if(!items.length) return;
+    e.preventDefault();
+    applyPasteItems(items, row);
+  });
   $('codeRows').appendChild(row);
 }
 function buildUrl(){
@@ -468,6 +539,19 @@ function canvasPngBlob(){return new Promise(r=>cv.toBlob(r,'image/png'))}
 function blobToDataUrl(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob)})}
 ['name','from','lang'].forEach(i=>$(i).addEventListener('input',refresh));$('lang').addEventListener('change',()=>{GiftFace.loadFonts(TT()).then(refresh)});$('theme').addEventListener('change',setTheme);
 $('addCode').onclick=()=>{addRow('','5');refresh()};
+$('pasteCodes').onclick=async()=>{
+  let raw='';
+  try{raw=await navigator.clipboard.readText()}catch(err){
+    raw=prompt('把表格里的兑换码粘贴到这里（每行一个，或 码\t金额）：','')||'';
+  }
+  const items=parsePasteItems(raw);
+  if(!items.length){alert('剪贴板里没有可识别的兑换码');return}
+  // replace all rows with pasted set
+  $('codeRows').innerHTML='';
+  for(const it of items) addRow(it.code, String(it.amount));
+  if(!items.length) addRow('','5');
+  refresh();
+};
 addRow('','5');
 $('mk').onclick=()=>{refresh();$('url').select()};
 $('copy').onclick=async()=>{refresh();try{await navigator.clipboard.writeText($('url').value);$('copy').textContent='已复制'}catch(e){$('url').select()}setTimeout(()=>$('copy').textContent='复制链接',1200)};
