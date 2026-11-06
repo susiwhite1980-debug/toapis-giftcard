@@ -86,6 +86,14 @@ select option{background:#1c1008;color:#fbe9dc}
 }
 .code-row button.rm:hover{background:rgba(212,83,60,.18)}
 .codes-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.bulk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.bulk-bar .bulk-amt{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);font-weight:600}
+.bulk-bar .bulk-amt input{width:96px;padding:9px 10px;text-align:center;font:600 13.5px GJ,Consolas,monospace}
+.bulk-bar button{background:rgba(255,255,255,.04);color:var(--accent-soft);box-shadow:none;border:1px solid var(--line2);padding:9px 12px;font-size:13px}
+.bulk-bar button:hover{background:rgba(242,106,27,.14)}
+.bulk-tip{font-size:12px;color:var(--soft);min-height:1em}
+.bulk-tip.ok{color:#8ee0a8}
+.bulk-tip.warn{color:#ffb0a0}
 .sum{font-size:13px;color:var(--muted)}
 .sum b{color:var(--accent-soft);font-size:15px}
 .btn-row{display:flex;flex-wrap:wrap;gap:8px}
@@ -320,7 +328,14 @@ canvas#cv{
       </section>
       <section class="section" id="codesBox">
         <h2>兑换码</h2>
-        <p class="hint">每行一个码 + 金额。可从表格一次性粘贴：多行码、或「码 + 金额」两列（Excel/Sheets 直接 Ctrl+V）。多码时卡面显示合计、码框模糊；发出去仍是一张卡 + 一条链接，客户页按张领取。</p>
+        <p class="hint">每行一个码 + 金额。表格一般只有兑换码列：先填「统一金额」→「一键全填」，所有行一次填满；再从表格粘贴兑换码列，多行会自动拆成多行（Excel/Sheets 直接 Ctrl+V）。多码时卡面显示合计、码框模糊；发出去仍是一张卡 + 一条链接，客户页按张领取。</p>
+        <div class="bulk-bar">
+          <label class="bulk-amt" for="bulkAmt"><span>统一金额</span>
+            <input id="bulkAmt" inputmode="decimal" autocomplete="off" placeholder="如 5" aria-label="统一金额">
+          </label>
+          <button type="button" id="fillAll">＝ 一键全填</button>
+          <span class="bulk-tip" id="bulkTip" role="status" aria-live="polite"></span>
+        </div>
         <div class="code-rows" id="codeRows"></div>
         <div class="codes-foot">
           <span class="sum">合计 <b id="sumAmt">$0</b> · <span id="codeCount">0</span> 个码</span>
@@ -409,6 +424,24 @@ let ready=false,THEME=null,themeKey='default';
 function base(){return new URL('./',location.href).href.split('#')[0];}
 function parseAmt(v){const m=String(v||'').replace(/[^\d.]/g,'');const n=parseFloat(m);return Number.isFinite(n)?n:0}
 function fmtAmt(n){const x=Math.round(n*100)/100;return '$'+(Number.isInteger(x)?String(x):x.toFixed(2).replace(/\.?0+$/,''))}
+// 统一金额：批量填 / 新行默认值（0 = 没填）
+function bulkAmount(){const el=$('bulkAmt');const v=el?parseAmt(el.value):0;return v>0?v:0}
+function newRowAmount(){return bulkAmount()||5}
+let bulkTipTimer=0;
+function setBulkTip(msg,kind){const el=$('bulkTip');if(!el)return;el.textContent=msg||'';el.className='bulk-tip'+(kind?' '+kind:'');clearTimeout(bulkTipTimer);if(msg)bulkTipTimer=setTimeout(()=>{el.textContent='';el.className='bulk-tip'},2600)}
+function fillAllAmounts(){
+  const amt=bulkAmount();
+  if(!amt){setBulkTip('先在左边填统一金额（如 5）','warn');$('bulkAmt').focus();return 0}
+  if(!document.querySelector('#codeRows .code-row')) addRow('');
+  let n=0;
+  for(const r of document.querySelectorAll('#codeRows .code-row')){
+    r.querySelector('.amt').value=String(amt);
+    n++;
+  }
+  refresh();
+  setBulkTip('已把 '+n+' 行填成 '+fmtAmt(amt),'ok');
+  return n;
+}
 function readRows(){
   const rows=[...document.querySelectorAll('#codeRows .code-row')];
   const out=[];
@@ -426,14 +459,15 @@ function syncSum(){
   $('codeCount').textContent=String(items.length);
   return items;
 }
-function parsePasteItems(raw){
+function parsePasteItems(raw, fallbackAmt){
+  const def=parseAmt(fallbackAmt)>0?parseAmt(fallbackAmt):5;
   const text=String(raw||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
   if(!text) return [];
   const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
   const items=[];
   for(const line of lines){
     // Excel/Sheets: code\tamount  |  code,amount  |  code:amount  |  bare code
-    let code='', amount='5';
+    let code='', amount=String(def);
     if(line.includes('\t')){
       const parts=line.split('\t').map(s=>s.trim()).filter(Boolean);
       code=parts[0]||'';
@@ -453,7 +487,7 @@ function parsePasteItems(raw){
     if(!code) continue;
     // skip spreadsheet header rows
     if(/^(code|codes?|兑换码|兑换代碼|redeem|amount|金额|金額)$/i.test(code)) continue;
-    const n=parseAmt(amount);items.push({code,amount:n||5});
+    const n=parseAmt(amount);items.push({code,amount:n||def});
   }
   // de-dupe consecutive identical codes keep first amount
   const seen=new Set();const out=[];
@@ -483,12 +517,12 @@ function applyPasteItems(items, startRow){
   refresh();
   return true;
 }
-function addRow(code='',amount='5'){
+function addRow(code='',amount){
   const row=document.createElement('div');row.className='code-row';
   row.innerHTML='<input class="code" placeholder="粘贴兑换码（可一次多行）" spellcheck="false"><input class="amt" inputmode="decimal" placeholder="金额"><button type="button" class="rm" title="删除">−</button>';
   row.querySelector('.code').value=code;
-  row.querySelector('.amt').value=String(amount).replace(/^\$/,'');
-  row.querySelector('.rm').onclick=()=>{const n=document.querySelectorAll('#codeRows .code-row').length;if(n<=1){row.querySelector('.code').value='';row.querySelector('.amt').value='5';refresh();return}row.remove();refresh()};
+  row.querySelector('.amt').value=(amount===undefined||amount===null||amount==='')?String(newRowAmount()):String(amount).replace(/^\$/,'');
+  row.querySelector('.rm').onclick=()=>{const n=document.querySelectorAll('#codeRows .code-row').length;if(n<=1){row.querySelector('.code').value='';row.querySelector('.amt').value=String(newRowAmount());refresh();return}row.remove();refresh()};
   row.querySelector('.code').addEventListener('input',refresh);
   row.querySelector('.amt').addEventListener('input',refresh);
   row.querySelector('.code').addEventListener('paste',(e)=>{
@@ -496,7 +530,7 @@ function addRow(code='',amount='5'){
     if(!raw) return;
     // multi-line or tabbed table → bulk fill
     if(!/[\n\r\t]/.test(raw) && !/[,，;；|].*[\d.]/.test(raw)) return;
-    const items=parsePasteItems(raw);
+    const items=parsePasteItems(raw, newRowAmount());
     if(items.length<=1 && !/[\n\r\t]/.test(raw)) return;
     if(!items.length) return;
     e.preventDefault();
@@ -538,21 +572,25 @@ function refresh(){const u=buildUrl();$('url').value=u;$('open').href=u;draw();i
 function canvasPngBlob(){return new Promise(r=>cv.toBlob(r,'image/png'))}
 function blobToDataUrl(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob)})}
 ['name','from','lang'].forEach(i=>$(i).addEventListener('input',refresh));$('lang').addEventListener('change',()=>{GiftFace.loadFonts(TT()).then(refresh)});$('theme').addEventListener('change',setTheme);
-$('addCode').onclick=()=>{addRow('','5');refresh()};
+$('addCode').onclick=()=>{addRow('');refresh()};
+// 统一金额 + 一键全填
+$('fillAll').onclick=()=>fillAllAmounts();
+$('bulkAmt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();fillAllAmounts()}});
+$('bulkAmt').addEventListener('input',()=>setBulkTip(''));
 $('pasteCodes').onclick=async()=>{
   let raw='';
   try{raw=await navigator.clipboard.readText()}catch(err){
     raw=prompt('把表格里的兑换码粘贴到这里（每行一个，或 码\t金额）：','')||'';
   }
-  const items=parsePasteItems(raw);
+  const items=parsePasteItems(raw, newRowAmount());
   if(!items.length){alert('剪贴板里没有可识别的兑换码');return}
   // replace all rows with pasted set
   $('codeRows').innerHTML='';
   for(const it of items) addRow(it.code, String(it.amount));
-  if(!items.length) addRow('','5');
+  if(!items.length) addRow('');
   refresh();
 };
-addRow('','5');
+addRow('');
 $('mk').onclick=()=>{refresh();$('url').select()};
 $('copy').onclick=async()=>{refresh();try{await navigator.clipboard.writeText($('url').value);$('copy').textContent='已复制'}catch(e){$('url').select()}setTimeout(()=>$('copy').textContent='复制链接',1200)};
 $('dl').onclick=()=>{draw();cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ToAPIs_GiftCard_'+$('lang').value+(themeKey!=='default'?'_'+themeKey:'')+'.png';a.click()},'image/png')};
